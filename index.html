@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator V4 - Malaysia</title>
+<style>
+html,body{margin:0;padding:0;background:#0f172a !important;color:#fff !important;min-height:100vh;font-family:'Segoe UI',system-ui,sans-serif}
+*{box-sizing:border-box}
+.container{max-width:900px;margin:0 auto;padding:16px}
+h1{text-align:center;font-size:1.5rem;margin:0 0 12px;background:linear-gradient(90deg,#fbbf24,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tab-bar{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px}
+.tab-btn{padding:8px 14px;border:none;border-radius:10px;cursor:pointer;font-size:.85rem;background:#1e293b;color:#94a3b8;transition:all .2s}
+.tab-btn:hover{background:#334155;color:#fff}
+.tab-btn.active{background:#2563eb;color:#fff;font-weight:bold;box-shadow:0 0 12px rgba(37,99,235,.6)}
+.sub-bar{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:14px}
+.sub-tab-btn{padding:5px 10px;border:1px solid #334155;border-radius:8px;cursor:pointer;font-size:.75rem;background:#1e293b;color:#94a3b8;transition:all .15s}
+button.sub-tab-btn:hover{background:#2563eb;box-shadow:0 0 8px rgba(59,130,246,.6);color:#fff}
+.sub-tab-btn.active{background:#fbbf24 !important;color:#000 !important;font-weight:bold !important;box-shadow:0 0 12px rgba(251,191,36,.8);transform:scale(1.05);transition:all .15s}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.sub-content{display:none}
+.sub-content.active{display:block}
+.card{background:#1e293b;border-radius:14px;padding:18px;margin-bottom:14px;border:1px solid #334155}
+.card h3{margin:0 0 12px;color:#fbbf24;font-size:1rem}
+label{display:block;margin-bottom:4px;color:#94a3b8;font-size:.8rem}
+input[type=number],input[type=text],select{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#fff;font-size:.95rem;margin-bottom:10px}
+input:focus,select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 6px rgba(37,99,235,.4)}
+.btn{padding:10px 18px;border:none;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .15s}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#3b82f6;box-shadow:0 0 10px rgba(37,99,235,.5)}
+.btn-calc{background:linear-gradient(135deg,#f97316,#fbbf24);color:#000}.btn-calc:hover{box-shadow:0 0 12px rgba(251,191,36,.6);transform:scale(1.02)}
+.btn-sm{padding:6px 10px;font-size:.8rem}
+.result-card{background:linear-gradient(135deg,#1e293b,#0f172a);border:1px solid #fbbf24;border-radius:12px;padding:14px;margin-top:12px;font-size:.95rem;line-height:1.8}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.split3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.split2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:600px){.split,.split2,.split3{grid-template-columns:1fr}}
+.chk-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chk-row input[type=checkbox]{width:18px;height:18px;accent-color:#fbbf24}
+.warn{color:#fbbf24;font-size:.75rem;margin-top:8px;font-style:italic}
+.err{color:#f87171;font-size:.85rem}
+hr{border:none;border-top:1px solid #334155;margin:10px 0}
+/* ===== CASIO fx-260 SOLAR ===== */
+.casio-fx260{max-width:380px;margin:0 auto;background:linear-gradient(180deg,#3a3f47 0%,#22262c 100%);border:1px solid #1a1d22;border-radius:12px;padding:12px;box-shadow:0 15px 35px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.1);font-family:'Arial',sans-serif}
+.fx-header{display:flex;align-items:baseline;justify-content:space-between;padding:2px 6px 8px 6px;border-bottom:1px solid #1a1d22;margin-bottom:10px}
+.fx-brand{font-family:'Arial Black',sans-serif;font-size:1em;font-weight:900;letter-spacing:2px;color:#e5e7eb}
+.fx-model{font-size:.7em;color:#94a3b8;letter-spacing:1px;font-style:italic}
+.fx-tag{font-size:.6em;color:#fbbf24;font-weight:bold}
+.fx-screen{background:#c8d4c8;border:3px solid #1a1d22;border-radius:4px;padding:8px 10px 10px 10px;margin-bottom:12px;box-shadow:inset 0 4px 10px rgba(0,0,0,.4)}
+.fx-hint{font-size:.6em;color:#374151;letter-spacing:1px;margin-bottom:4px;font-family:'Courier New',monospace}
+.fx-display{background:#d4dfd4;padding:8px 10px;border-radius:2px;font-family:'Courier New',monospace;font-size:1.5em;text-align:right;color:#1a2e1a;min-height:40px;word-break:break-all;letter-spacing:1px;box-shadow:inset 0 2px 4px rgba(0,0,0,.15)}
+.fx-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.fx-grid button{padding:12px 0;font-size:1em;font-weight:bold;border-radius:6px;border:none;cursor:pointer;font-family:'Arial',sans-serif;color:#fff;background:linear-gradient(180deg,#4a5058 0%,#2c3138 100%);box-shadow:0 3px 0 #1a1d22, inset 0 1px 0 rgba(255,255,255,.12);transition:all .08s ease;position:relative}
+.fx-grid button:active,.fx-grid button.pressed{transform:translateY(2px);box-shadow:0 1px 0 #1a1d22, inset 0 1px 3px rgba(0,0,0,.5);filter:brightness(1.35)}
+.fx-grid .k-num{background:linear-gradient(180deg,#3a4048 0%,#22262c 100%)}
+.fx-grid .k-sm{font-size:.9em}
+.fx-grid .k-red{background:linear-gradient(180deg,#ef4444 0%,#991b1b 100%);color:#fff}
+.fx-grid .k-eq{background:linear-gradient(180deg,#eab308 0%,#a16207 100%);color:#fff}
+.sub-content{display:none}
+.sub-content.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🧮 Calculator V4 - Malaysia</h1>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+<button class="tab-btn active" onclick="showTab('sains')">🧪 Sains</button>
+<button class="tab-btn" onclick="showTab('currency')">💱 Currency</button>
+<button class="tab-btn" onclick="showTab('bmi')">⚖️ BMI</button>
+<button class="tab-btn" onclick="showTab('engineering')">⚙️ Engineering</button>
+<button class="tab-btn" onclick="showTab('finance')">💰 Finance</button>
+<button class="tab-btn" onclick="showTab('pekerja')">👷 Pekerja</button>
+</div>
+
+<!-- TAB 1: SAINS -->
+<div id="tab-sains" class="tab-content active">
+<div class="casio-fx260">
+<div class="fx-header">
+<span class="fx-brand">KIRA</span>
+<span class="fx-model">v4 KIRA</span>
+<span class="fx-tag">KUASA DESKTOPKU</span>
+</div>
+<div class="fx-screen">
+<div class="fx-hint">AUTO SHRIFT 2</div>
+<div id="disp-sci" class="fx-display">0</div>
+</div>
+<div class="fx-grid">
+<button class="k-dark k-sm" onclick="clearSci()">ON</button>
+<button class="k-dark k-sm" onclick="clearSci()">MODE</button>
+<button class="k-dark k-sm" onclick="insertFunc('sqrt')">√</button>
+<button class="k-dark k-sm" onclick="insertFunc('pow')">x²</button>
+<button class="k-dark k-sm" onclick="insertFunc('log')">log</button>
+<button class="k-dark k-sm" onclick="insertFunc('sin')">sin</button>
+<button class="k-dark k-sm" onclick="insertFunc('cos')">cos</button>
+<button class="k-dark k-sm" onclick="insertFunc('tan')">tan</button>
+<button class="k-red k-sm" onclick="clearSci()">C</button>
+<button class="k-red k-sm" onclick="clearSci()">AC</button>
+<button class="k-dark k-sm" onclick="delSci()">DEL</button>
+<button class="k-dark k-sm" onclick="appendVal('/')">÷</button>
+<button class="k-num" onclick="appendVal('7')">7</button>
+<button class="k-num" onclick="appendVal('8')">8</button>
+<button class="k-num" onclick="appendVal('9')">9</button>
+<button class="k-dark k-sm" onclick="appendVal('*')">×</button>
+<button class="k-num" onclick="appendVal('4')">4</button>
+<button class="k-num" onclick="appendVal('5')">5</button>
+<button class="k-num" onclick="appendVal('6')">6</button>
+<button class="k-dark k-sm" onclick="appendVal('-')">−</button>
+<button class="k-num" onclick="appendVal('1')">1</button>
+<button class="k-num" onclick="appendVal('2')">2</button>
+<button class="k-num" onclick="appendVal('3')">3</button>
+<button class="k-dark k-sm" onclick="appendVal('+')">+</button>
+<button class="k-num" onclick="appendVal('0')">0</button>
+<button class="k-num" onclick="appendVal('.')">.</button>
+<button class="k-dark k-sm" onclick="insertVal(Math.PI)">π</button>
+<button class="k-eq k-sm" onclick="calcSci()">=</button>
+</div>
+</div>
+</div>
+
+<!-- TAB 2: CURRENCY -->
+<div id="tab-currency" class="tab-content">
+<div class="card">
+<h3>💱 Tukar Mata Wang</h3>
+<div class="split">
+<div><label>Jumlah</label><input type="number" id="curAmount" value="100"></div>
+<div><label>Dari</label>
+<select id="curFrom"><option value="USD">USD</option><option value="MYR">MYR</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="IDR">IDR</option><option value="PHP">PHP</option><option value="THB">THB</option><option value="SGD">SGD</option><option value="JPY">JPY</option><option value="CNY">CNY</option></select>
+</div>
+</div>
+<div><label>Kepada</label>
+<select id="curTo"><option value="MYR">MYR</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="IDR">IDR</option><option value="PHP">PHP</option><option value="THB">THB</option><option value="SGD">SGD</option><option value="JPY">JPY</option><option value="CNY">CNY</option></select>
+</div>
+<button class="btn btn-calc" onclick="convertCurrency()">⚡ Kira</button>
+<button class="btn btn-sm" onclick="refreshRates()">🔄 Semak Kadar Terkini</button>
+<div class="result-card" id="curResult" style="display:none"></div>
+<p class="warn">⚠️ Kadar forex adalah anggaran — sahkan dengan bank/API</p>
+</div>
+</div>
+
+<!-- TAB 3: BMI -->
+<div id="tab-bmi" class="tab-content">
+<div class="card">
+<h3>⚖️ Kalkulator BMI</h3>
+<div class="split">
+<div><label>Berat (kg)</label><input type="number" id="bmiWeight" placeholder="cth: 70"></div>
+<div><label>Tinggi (m)</label><input type="number" id="bmiHeight" placeholder="cth: 1.70" step="0.01"></div>
+</div>
+<button class="btn btn-calc" onclick="calcBMI()">⚡ Kira BMI</button>
+<div class="result-card" id="bmiResult" style="display:none"></div>
+</div>
+</div>
+
+<!-- TAB 4: ENGINEERING -->
+<div id="tab-engineering" class="tab-content">
+<div class="card">
+<h3>⚙️ Engineering Calculators</h3>
+<div class="sub-bar">
+<button class="sub-tab-btn" onclick="showSub('eng-unit','tab-engineering')">Unit</button>
+<button class="sub-tab-btn" onclick="showSub('eng-bahan','tab-engineering')">Bahan</button>
+<button class="sub-tab-btn" onclick="showSub('eng-paip','tab-engineering')">Paip</button>
+<button class="sub-tab-btn" onclick="showSub('eng-waste','tab-engineering')">Waste Pipe</button>
+<button class="sub-tab-btn" onclick="showSub('eng-cat','tab-engineering')">Cat</button>
+<button class="sub-tab-btn" onclick="showSub('eng-masa','tab-engineering')">Masa</button>
+<button class="sub-tab-btn" onclick="showSub('eng-dapur','tab-engineering')">Dapur</button>
+<button class="sub-tab-btn" onclick="showSub('eng-precision','tab-engineering')">Precision</button>
+<button class="sub-tab-btn" onclick="showSub('eng-tangki','tab-engineering')">Tangki</button>
+<button class="sub-tab-btn" onclick="showSub('eng-stand','tab-engineering')">Stand</button>
+<button class="sub-tab-btn" onclick="showSub('eng-piping','tab-engineering')">Piping</button>
+<button class="sub-tab-btn" onclick="showSub('eng-bata','tab-engineering')">Bata</button>
+<button class="sub-tab-btn" onclick="showSub('eng-plaster','tab-engineering')">Plaster</button>
+<button class="sub-tab-btn" onclick="showSub('eng-tiles','tab-engineering')">Tiles</button>
+<button class="sub-tab-btn" onclick="showSub('eng-bumbung','tab-engineering')">Bumbung</button>
+<button class="sub-tab-btn" onclick="showSub('eng-pagar','tab-engineering')">Pagar</button>
+<button class="sub-tab-btn" onclick="showSub('eng-tanah','tab-engineering')">Kerja Tanah</button>
+<button class="sub-tab-btn" onclick="showSub('eng-asas','tab-engineering')">Asas</button>
+<button class="sub-tab-btn" onclick="showSub('eng-struktur','tab-engineering')">Struktur</button>
+<button class="sub-tab-btn" onclick="showSub('eng-pintu','tab-engineering')">Pintu & Tingkap</button>
+<button class="sub-tab-btn" onclick="showSub('eng-elektrik','tab-engineering')">Elektrik</button>
+<button class="sub-tab-btn" onclick="showSub('eng-tandas','tab-engineering')">Tandas</button>
+<button class="sub-tab-btn" onclick="showSub('eng-pengurusan','tab-engineering')">Pengurusan</button>
+<button class="sub-tab-btn" onclick="showSub('eng-kos','tab-engineering')">Kos Rumah</button>
+</div>
+</div>
+
+<div id="sub-eng-unit" class="sub-content"><div class="card"><h3>Tukar Unit</h3>
+<div class="split">
+<div><label>Jumlah</label><input type="number" id="unitAmount" value="100" placeholder="Jumlah"></div>
+<div><label>Jenis</label><select id="unitType" onchange="updateUnits()"><option value="length">Panjang</option><option value="weight">Berat</option><option value="temperature">Suhu</option><option value="pressure">Tekanan</option><option value="speed">Kelajuan</option></select></div>
+</div>
+<div class="split"><div><label>Dari</label><select id="fromUnit"></select></div><div><label>Kepada</label><select id="toUnit"></select></div></div>
+<button class="btn btn-calc" onclick="convertUnit()">⚡ Tukar</button>
+<div class="result-card" id="unitResult" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-bahan" class="sub-content"><div class="card"><h3>🧱 Bahan Binaan & Konkrit</h3>
+<div class="split">
+<div><label>Nisbah Campuran</label>
+<select id="bahanNisbah"><option value="1:2:3">1:2:3 — Kuat (Tiang/Beam)</option><option value="1:1.5:3">1:1.5:3 — Extra Kuat</option><option value="1:2:4">1:2:4 — Standard</option><option value="1:3:6">1:3:6 — Sederhana</option><option value="1:4:8">1:4:8 — Lemah</option></select>
+</div>
+<div><label>Struktur</label>
+<select id="bahanStruktur"><option value="lantai">Lantai / Slab</option><option value="tiang">Tiang</option><option value="beam">Beam</option></select>
+</div>
+</div>
+<div class="split3">
+<div><label>Panjang (m)</label><input type="number" id="bahanP" value="5"></div>
+<div><label>Lebar (m)</label><input type="number" id="bahanL" value="3"></div>
+<div><label>Tebal (m)</label><input type="number" id="bahanT" value="0.15" step="0.01"></div>
+</div>
+<div class="split3">
+<div><label>Simen/bag</label><input type="number" id="hargaSimen" value="20"></div>
+<div><label>Pasir/m³</label><input type="number" id="hargaPasir" value="50"></div>
+<div><label>Batu/m³</label><input type="number" id="hargaBatu" value="60"></div>
+</div>
+<div class="split3">
+<div><label>Besi/kg</label><input type="number" id="hargaBesi" value="3.8" step="0.1"></div>
+<div><label>Buruh/m³</label><input type="number" id="hargaBuruh" value="150"></div>
+<div><label>Form/m²</label><input type="number" id="hargaFormwork" value="40"></div>
+</div>
+<button class="btn btn-calc" onclick="calcBahan()">⚡ Kira</button>
+<div class="result-card" id="bahanRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-paip" class="sub-content"><div class="card"><h3>🚰 Paip Rumah</h3>
+<div class="split3">
+<div><label>ABS (RM/m)</label><input type="number" id="hargaAbsDalam" value="7" step="0.5"></div>
+<div><label>PVC (RM/m)</label><input type="number" id="hargaPvcLuar" value="4" step="0.5"></div>
+<div><label>PVC50 (RM/m)</label><input type="number" id="hargaPvcMeter" value="22" step="1"></div>
+</div>
+<div class="split3">
+<div><label>ABS (m)</label><input type="number" id="paipDalam" value="20"></div>
+<div><label>PVC (m)</label><input type="number" id="paipLuar" value="10"></div>
+<div><label>PVC50 (m)</label><input type="number" id="paipMeter" value="5"></div>
+</div>
+<button class="btn btn-calc" onclick="calcPaipRumah()">⚡ Kira Kos</button>
+<div class="result-card" id="paipRumahRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-waste" class="sub-content"><div class="card"><h3>🚰 Waste Pipe & Soil Pipe (Rumah)</h3>
+
+<p style="font-size:.85em;color:#fbbf24;margin-bottom:8px;font-weight:bold">🏠 Spesifikasi Rumah</p>
+<div class="split3">
+<div><label>Bilik Air</label><input type="number" id="wasteBilik" value="2" min="0"></div>
+<div><label>Dapur</label><input type="number" id="wasteDapur" value="1" min="0"></div>
+<div><label>Tandas Luar</label><input type="number" id="wasteTandas" value="1" min="0"></div>
+</div>
+<div class="split">
+<div><label>Jarak ke Septic Tank (m)</label><input type="number" id="wasteSeptic" value="10"></div>
+<div><label>Tingkat</label><input type="number" id="wasteTingkat" value="1" min="1"></div>
+</div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:10px;margin-bottom:8px;font-weight:bold">💰 Harga (RM/m)</p>
+<div class="split3">
+<div><label>PVC 50mm (2")</label><input type="number" id="wasteHarga50" value="12" step="0.5"></div>
+<div><label>PVC 75mm (3")</label><input type="number" id="wasteHarga75" value="18" step="0.5"></div>
+<div><label>PVC 110mm (4")</label><input type="number" id="wasteHarga110" value="22" step="0.5"></div>
+</div>
+<div class="split">
+<div><label>Fitting (RM/unit)</label><input type="number" id="wasteHargaFitting" value="5" step="0.5"></div>
+<div><label>Buruh (RM/point)</label><input type="number" id="wasteHargaBuruh" value="80" step="10"></div>
+</div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:10px;margin-bottom:8px;font-weight:bold">🔧 Jenis Fitting (RM/unit)</p>
+<div class="split3">
+<div><label>Elbow 90°</label><input type="number" id="wasteHargaElbow" value="6" step="0.5"></div>
+<div><label>Tee/Y</label><input type="number" id="wasteHargaTee" value="8" step="0.5"></div>
+<div><label>Floor Trap</label><input type="number" id="wasteHargaFloor" value="25" step="1"></div>
+</div>
+<div class="split3">
+<div><label>P-Trap</label><input type="number" id="wasteHargaP" value="15" step="0.5"></div>
+<div><label>Socket</label><input type="number" id="wasteHargaSocket" value="4" step="0.5"></div>
+<div><label>Vent Cap</label><input type="number" id="wasteHargaVent" value="8" step="0.5"></div>
+</div>
+
+<button class="btn btn-calc" onclick="calcWastePipe()">⚡ Kira Kuantiti & Kos</button>
+<div class="result-card" id="wasteRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-cat" class="sub-content"><div class="card"><h3>🎨 Cat Dinding</h3>
+<div class="split"><div><label>Luas dinding (m²)</label><input type="number" id="catArea" value="50" placeholder="cth: 50"></div>
+<div style="display:flex;align-items:flex-end"><button class="btn btn-calc" onclick="calcCat()">⚡ Kira</button></div></div>
+<p class="warn">Formula: 1L cat = 5 m²</p>
+<div class="result-card" id="catRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-masa" class="sub-content"><div class="card"><h3>⏱️ Penukaran Masa</h3>
+<div class="split">
+<div><label>Nilai</label><input type="number" id="masaVal" value="2" placeholder="cth: 2"></div>
+<div><label>Dari</label><select id="masaFrom"><option value="s">Saat</option><option value="min">Minit</option><option value="h" selected>Jam</option><option value="d">Hari</option></select></div>
+</div>
+<div><label>Kepada</label><select id="masaTo"><option value="s">Saat</option><option value="min" selected>Minit</option><option value="h">Jam</option><option value="d">Hari</option></select></div>
+<button class="btn btn-calc" onclick="convertMasa()">⚡ Tukar</button>
+<div class="result-card" id="masaRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-dapur" class="sub-content"><div class="card"><h3>🍳 Sukatan Dapur (Cawan → ml)</h3>
+<div class="split"><div><label>Bilangan cawan</label><input type="number" id="dapurVal" value="3" placeholder="cth: 3"></div>
+<div style="display:flex;align-items:flex-end"><button class="btn btn-calc" onclick="calcDapur()">⚡ Kira</button></div></div>
+<p class="warn">1 cawan = 240 ml</p>
+<div class="result-card" id="dapurRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-precision" class="sub-content"><div class="card"><h3>🔬 Ukuran Tepat (Precision)</h3>
+<div class="split">
+<div><label>Nilai</label><input type="number" id="precVal" value="1" placeholder="cth: 1"></div>
+<div><label>Unit</label><select id="precUnit"><option value="in">Inci (in)</option><option value="mm">Milimeter (mm)</option><option value="um">Mikrometer (µm)</option><option value="nm">Nanometer (nm)</option><option value="thou">Thou / Mil</option><option value="cm">Sentimeter (cm)</option><option value="m">Meter (m)</option></select></div>
+</div>
+<button class="btn btn-calc" onclick="convertPrecision()">⚡ Tukar</button>
+<div class="result-card" id="precRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-tangki" class="sub-content"><div class="card"><h3>🛢️ Tangki Air</h3>
+<div class="split">
+<div><label>Penghuni</label><input type="number" id="tangkiPenghuni" value="4"></div>
+<div><label>Hari backup</label><input type="number" id="tangkiHari" value="2"></div>
+</div>
+<button class="btn btn-primary" onclick="calcTangki()">Kira Keperluan</button>
+<div class="result-card" id="tangkiRes" style="display:none"></div>
+<hr>
+<div class="split2" style="margin-top:10px">
+<div><label>Harga 500L</label><input type="number" id="hargaPoly500" value="350"></div>
+<div><label>Harga 1000L</label><input type="number" id="hargaPoly1000" value="600"></div>
+</div>
+<div class="split2">
+<div><label>Harga 1500L</label><input type="number" id="hargaPoly1500" value="900"></div>
+<div><label>Harga 2000L</label><input type="number" id="hargaPoly2000" value="1150"></div>
+</div>
+<div><label>Jenis Tangki</label><select id="tangkiJenis"><option value="poly500">Poly 500L</option><option value="poly1000">Poly 1000L</option><option value="poly1500">Poly 1500L</option><option value="poly2000" selected>Poly 2000L</option></select></div>
+<button class="btn btn-calc" onclick="calcTangkiKos()">⚡ Kira Kos</button>
+<div class="result-card" id="tangkiKosRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-stand" class="sub-content"><div class="card"><h3>🏗️ Menara / Stand Tangki</h3>
+<div class="split">
+<div><label>Tinggi (m)</label><input type="number" id="standTinggi" value="6"></div>
+<div><label>Saiz tangki (L)</label><input type="number" id="standTangkiL" value="2000"></div>
+</div>
+<div><label>Bahan</label><select id="standBahan"><option value="hollow2">Besi Hollow 2"×2"</option><option value="gi2">GI Pipe 2"</option><option value="angle">Besi Angle 50×50</option></select></div>
+<button class="btn btn-calc" onclick="calcStand()">⚡ Kira Stand</button>
+<div class="result-card" id="standRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-piping" class="sub-content"><div class="card"><h3>🔧 Piping (Industri)</h3>
+<h4 style="color:#fbbf24;margin:8px 0">Saiz Paip (Flow Rate)</h4>
+<div class="split">
+<div><label>Flow Q (L/min)</label><input type="number" id="pipeQ" value="100" placeholder="cth: 100"></div>
+<div><label>Kelajuan v (m/s)</label><input type="number" id="pipeV" value="1.5"></div>
+</div>
+<button class="btn btn-sm" onclick="calcPipeSize()">Kira D</button>
+<div class="result-card" id="pipeSizeRes" style="display:none"></div>
+<hr>
+<h4 style="color:#fbbf24;margin:8px 0">Isipadu Paip</h4>
+<div class="split">
+<div><label>Diameter D (mm)</label><input type="number" id="pipeD2" value="100" placeholder="cth: 100"></div>
+<div><label>Panjang L (m)</label><input type="number" id="pipeL2" value="6" placeholder="cth: 6"></div>
+</div>
+<button class="btn btn-sm" onclick="calcPipeVol()">Kira V</button>
+<div class="result-card" id="pipeVolRes" style="display:none"></div>
+<hr>
+<h4 style="color:#fbbf24;margin:8px 0">Pembesaran Terma</h4>
+<div class="split">
+<div><label>Panjang L (m)</label><input type="number" id="pipeL3" value="20" placeholder="cth: 20"></div>
+<div><label>ΔT (°C)</label><input type="number" id="pipeDT" value="40" placeholder="cth: 40"></div>
+</div>
+<button class="btn btn-sm" onclick="calcPipeExpand()">Kira ΔL</button>
+<div class="result-card" id="pipeExpandRes" style="display:none"></div>
+<hr>
+<h4 style="color:#fbbf24;margin:8px 0">Penukaran DN ↔ NPS</h4>
+<div class="split">
+<div><label>Inci (NPS)</label><input type="number" id="pipeInchi" value="2" placeholder="cth: 2"></div>
+<div><label>DN (mm)</label><input type="number" id="pipeDN" placeholder="cth: 50"></div>
+</div>
+<button class="btn btn-sm" onclick="convertPipe()">Tukar</button>
+<div class="result-card" id="pipeConvRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-bata" class="sub-content"><div class="card"><h3>🧱 Bata Dinding</h3>
+<div class="split">
+<div><label>Panjang (m)</label><input type="number" id="bataP" value="10" placeholder="cth: 10"></div>
+<div><label>Tinggi (m)</label><input type="number" id="bataT" value="3" placeholder="cth: 3"></div>
+</div>
+<div class="split3">
+<div><label>Bata/biji</label><input type="number" id="hargaBataUnit" value="0.5" step="0.1"></div>
+<div><label>Simen/bag</label><input type="number" id="hargaBataSimen" value="20"></div>
+<div><label>Pasir/m³</label><input type="number" id="hargaBataPasir" value="50"></div>
+</div>
+<button class="btn btn-calc" onclick="calcBata()">⚡ Kira Bata</button>
+<div class="result-card" id="bataRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-plaster" class="sub-content"><div class="card"><h3>🖌️ Plaster / Lepaan Dinding</h3>
+<div class="split">
+<div><label>Luas (m²)</label><input type="number" id="plasterArea" value="50" placeholder="cth: 50"></div>
+<div><label>Tebal (mm)</label><input type="number" id="plasterTebal" value="12"></div>
+</div>
+<button class="btn btn-calc" onclick="calcPlaster()">⚡ Kira Plaster</button>
+<div class="result-card" id="plasterRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-tiles" class="sub-content"><div class="card"><h3>🔲 Tiles Lantai</h3>
+<div class="split">
+<div><label>Panjang (m)</label><input type="number" id="tilesP" value="5" placeholder="cth: 5"></div>
+<div><label>Lebar (m)</label><input type="number" id="tilesL" value="4" placeholder="cth: 4"></div>
+</div>
+<div><label>Saiz Tiles</label><select id="tilesSize"><option value="0.09">30×30 cm (0.09 m²)</option><option value="0.36" selected>60×60 cm (0.36 m²)</option><option value="0.64">80×80 cm (0.64 m²)</option></select></div>
+<div class="split3">
+<div><label>Tile/kpg</label><input type="number" id="hargaTileKeping" value="8"></div>
+<div><label>Gam/kg</label><input type="number" id="hargaTileGam" value="2"></div>
+<div><label>Grout/kg</label><input type="number" id="hargaTileGrout" value="3"></div>
+</div>
+<button class="btn btn-calc" onclick="calcTiles()">⚡ Kira Tiles</button>
+<div class="result-card" id="tilesRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-bumbung" class="sub-content"><div class="card"><h3>🏠 Bumbung / Atap</h3>
+<div class="split">
+<div><label>Panjang (m)</label><input type="number" id="bumbungP" value="10" placeholder="cth: 10"></div>
+<div><label>Lebar (m)</label><input type="number" id="bumbungL" value="8" placeholder="cth: 8"></div>
+</div>
+<div class="split">
+<div><label>Cerun (°)</label><input type="number" id="bumbungCerun" value="30"></div>
+<div><label>Jenis Atap</label><select id="bumbungJenis"><option value="genting">Genting (25 kpg/m²)</option><option value="zink">Zink / Metal (0.5 kpg/m²)</option></select></div>
+</div>
+<button class="btn btn-calc" onclick="calcBumbung()">⚡ Kira Bumbung</button>
+<div class="result-card" id="bumbungRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-pagar" class="sub-content"><div class="card"><h3>🧱 Pagar Rumah</h3>
+<div class="split">
+<div><label>Panjang (m)</label><input type="number" id="pagarP" value="20" placeholder="cth: 20"></div>
+<div><label>Tinggi (m)</label><input type="number" id="pagarT" value="1.5"></div>
+</div>
+<div><label>Jenis Pagar</label><select id="pagarJenis"><option value="besi">Besi Hollow</option><option value="konkrit">Konkrit Penuh</option><option value="bata">Bata + Plaster</option></select></div>
+<button class="btn btn-calc" onclick="calcPagar()">⚡ Kira Pagar</button>
+<div class="result-card" id="pagarRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-tanah" class="sub-content"><div class="card"><h3>🏗️ Kerja Tanah & Tapak</h3>
+<div class="split3">
+<div><label>Panjang (m)</label><input type="number" id="tanahP" value="10"></div>
+<div><label>Lebar (m)</label><input type="number" id="tanahL" value="10"></div>
+<div><label>Kedalaman (m)</label><input type="number" id="tanahD" value="0.6" step="0.1"></div>
+</div>
+<div class="split3">
+<div><label>Harga Gali/m³</label><input type="number" id="tanahHargaGali" value="15"></div>
+<div><label>Harga Buang/m³</label><input type="number" id="tanahHargaBuang" value="10"></div>
+<div><label>Harga Pasir Isi/m³</label><input type="number" id="tanahHargaIsi" value="35"></div>
+</div>
+<div class="split3">
+<div><label>Harga Tanda/m²</label><input type="number" id="tanahHargaTanda" value="3"></div>
+<div><label>Harga Buruh/m³</label><input type="number" id="tanahHargaBuruh" value="20"></div>
+<div><label>Harga Rata/m²</label><input type="number" id="tanahHargaRata" value="5"></div>
+</div>
+<button class="btn btn-calc" onclick="calcTanah()">⚡ Kira Kos Tanah</button>
+<div class="result-card" id="tanahRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-asas" class="sub-content"><div class="card"><h3>🏛️ Asas & Tapak Konkrit</h3>
+<div class="split">
+<div><label>Saiz Tapak (m²)</label><input type="number" id="asasSaiz" value="100"></div>
+<div><label>Jenis Asas</label>
+<select id="asasJenis">
+<option value="pad">Pad Footing (tanah biasa)</option>
+<option value="raft">Raft (tanah lembut)</option>
+<option value="pile">Pile (tanah keras)</option>
+</select></div>
+</div>
+<div class="split3">
+<div><label>Bilangan Tiang</label><input type="number" id="asasBilTiang" value="12"></div>
+<div><label>Saiz Footing (m³)</label><input type="number" id="asasFooting" value="0.5" step="0.1"></div>
+<div><label>Kedalaman (m)</label><input type="number" id="asasDalam" value="0.8" step="0.1"></div>
+</div>
+<div class="split3">
+<div><label>Harga Konkrit/m³</label><input type="number" id="asasHargaKonkrit" value="280"></div>
+<div><label>Harga Besi/kg</label><input type="number" id="asasHargaBesi" value="3.8" step="0.1"></div>
+<div><label>Harga Buruh/m³</label><input type="number" id="asasHargaBuruh" value="150"></div>
+</div>
+<button class="btn btn-calc" onclick="calcAsas()">⚡ Kira Kos Asas</button>
+<div class="result-card" id="asasRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-struktur" class="sub-content"><div class="card"><h3>🪨 Tiang, Beam & Lantai Struktur</h3>
+<p style="font-size:.85em;color:#fbbf24;margin-bottom:8px;font-weight:bold">Tiang</p>
+<div class="split3">
+<div><label>Bilangan Tiang</label><input type="number" id="strutTiangBil" value="12"></div>
+<div><label>Tinggi Tiang (m)</label><input type="number" id="strutTiangTinggi" value="3.5" step="0.1"></div>
+<div><label>Saiz Tiang (m²)</label><input type="number" id="strutTiangSaiz" value="0.09" step="0.01"></div>
+</div>
+<p style="font-size:.85em;color:#fbbf24;margin-top:8px;margin-bottom:8px;font-weight:bold">Beam</p>
+<div class="split3">
+<div><label>Panjang Beam (m)</label><input type="number" id="strutBeamP" value="40"></div>
+<div><label>Saiz Beam (m²)</label><input type="number" id="strutBeamSaiz" value="0.06" step="0.01"></div>
+<div><label>Bilangan Beam</label><input type="number" id="strutBeamBil" value="8"></div>
+</div>
+<p style="font-size:.85em;color:#fbbf24;margin-top:8px;margin-bottom:8px;font-weight:bold">Lantai / Slab</p>
+<div class="split3">
+<div><label>Luas Lantai (m²)</label><input type="number" id="strutLantaiLuas" value="100"></div>
+<div><label>Tebal Slab (m)</label><input type="number" id="strutLantaiTebal" value="0.15" step="0.01"></div>
+<div><label>Harga Konkrit/m³</label><input type="number" id="strutHargaKonkrit" value="280"></div>
+</div>
+<div class="split3">
+<div><label>Harga Besi/kg</label><input type="number" id="strutHargaBesi" value="3.8" step="0.1"></div>
+<div><label>Harga Formwork/m²</label><input type="number" id="strutHargaForm" value="40"></div>
+<div><label>Harga Buruh/m³</label><input type="number" id="strutHargaBuruh" value="150"></div>
+</div>
+<button class="btn btn-calc" onclick="calcStruktur()">⚡ Kira Kos Struktur</button>
+<div class="result-card" id="strukturRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-pintu" class="sub-content"><div class="card"><h3>🚪 Pintu & Tingkap</h3>
+<div class="split">
+<div><label>Bilangan Pintu Utama</label><input type="number" id="pintuUtama" value="1"></div>
+<div><label>Harga Pintu Utama (RM)</label><input type="number" id="pintuHargaUtama" value="800"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Pintu Bilik</label><input type="number" id="pintuBilik" value="4"></div>
+<div><label>Harga Pintu Bilik (RM)</label><input type="number" id="pintuHargaBilik" value="350"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Pintu Tandas</label><input type="number" id="pintuTandas" value="2"></div>
+<div><label>Harga Pintu Tandas (RM)</label><input type="number" id="pintuHargaTandas" value="300"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Tingkap Kecil</label><input type="number" id="tingkapKecil" value="4"></div>
+<div><label>Harga Tingkap Kecil (RM)</label><input type="number" id="tingkapHargaKecil" value="250"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Tingkap Besar</label><input type="number" id="tingkapBesar" value="4"></div>
+<div><label>Harga Tingkap Besar (RM)</label><input type="number" id="tingkapHargaBesar" value="450"></div>
+</div>
+<div class="split">
+<div><label>Harga Buruh Pasang (RM/unit)</label><input type="number" id="pintuHargaBuruh" value="100"></div>
+<div><label>Wastage (%)</label><input type="number" id="pintuWastage" value="5"></div>
+</div>
+<button class="btn btn-calc" onclick="calcPintuTingkap()">⚡ Kira Kos Pintu & Tingkap</button>
+<div class="result-card" id="pintuRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-elektrik" class="sub-content"><div class="card"><h3>⚡ Elektrik & Lampu</h3>
+<div class="split">
+<div><label>Bilangan Point Lampu</label><input type="number" id="elekLampu" value="15"></div>
+<div><label>Harga/Point (RM)</label><input type="number" id="elekHargaLampu" value="45"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Point Soket</label><input type="number" id="elekSoket" value="12"></div>
+<div><label>Harga/Point (RM)</label><input type="number" id="elekHargaSoket" value="55"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Point Aircond</label><input type="number" id="elekAircond" value="3"></div>
+<div><label>Harga/Point (RM)</label><input type="number" id="elekHargaAircond" value="250"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Point Pemanas</label><input type="number" id="elekPemanas" value="2"></div>
+<div><label>Harga/Point (RM)</label><input type="number" id="elekHargaPemanas" value="180"></div>
+</div>
+<div class="split">
+<div><label>Papan Agihan (RM)</label><input type="number" id="elekPapanAgihan" value="1500"></div>
+<div><label>Harga Buruh (RM/point)</label><input type="number" id="elekHargaBuruh" value="35"></div>
+</div>
+<button class="btn btn-calc" onclick="calcElektrik()">⚡ Kira Kos Elektrik</button>
+<div class="result-card" id="elekRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-tandas" class="sub-content"><div class="card"><h3>🛁 Tandas & Bilik Air (Fit-Out)</h3>
+<div class="split">
+<div><label>Bilangan Bilik Air</label><input type="number" id="tandasBil" value="2"></div>
+<div><label>Jenis</label>
+<select id="tandasJenis">
+<option value="basic">Basic (duduk + sink + shower)</option>
+<option value="medium" selected>Medium (+ kabinet + cermin)</option>
+<option value="premium">Premium (+ bathtub + premium tiles)</option>
+</select></div>
+</div>
+<div class="split3">
+<div><label>Harga Mangga/mangkuk (RM)</label><input type="number" id="tandasMangga" value="300"></div>
+<div><label>Harga Sinki (RM)</label><input type="number" id="tandasSinki" value="250"></div>
+<div><label>Harga Shower (RM)</label><input type="number" id="tandasShower" value="200"></div>
+</div>
+<div class="split3">
+<div><label>Harga Tiles (RM/bilik)</label><input type="number" id="tandasTiles" value="600"></div>
+<div><label>Harga Kabinet (RM/bilik)</label><input type="number" id="tandasKabinet" value="400"></div>
+<div><label>Harga Cermin (RM/bilik)</label><input type="number" id="tandasCermin" value="150"></div>
+</div>
+<div class="split">
+<div><label>Harga Paip (RM/bilik)</label><input type="number" id="tandasPaip" value="350"></div>
+<div><label>Harga Buruh (RM/bilik)</label><input type="number" id="tandasBuruh" value="500"></div>
+</div>
+<button class="btn btn-calc" onclick="calcTandas()">⚡ Kira Kos Tandas</button>
+<div class="result-card" id="tandasRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-pengurusan" class="sub-content"><div class="card"><h3>📋 Pengurusan & Lain-lain</h3>
+<div class="split">
+<div><label>Yuran PBT (RM)</label><input type="number" id="pengPBT" value="3000"></div>
+<div><label>Yuran Arkitek (RM)</label><input type="number" id="pengArkitek" value="5000"></div>
+</div>
+<div class="split">
+<div><label>Yuran Juruukur (RM)</label><input type="number" id="pengJuruukur" value="2000"></div>
+<div><label>Yuran TNB/SYABAS (RM)</label><input type="number" id="pengUtiliti" value="4000"></div>
+</div>
+<div class="split">
+<div><label>Insurans & Permit (RM)</label><input type="number" id="pengInsurans" value="1500"></div>
+<div><label>Pengurusan Projek (%)</label><input type="number" id="pengManage" value="5"></div>
+</div>
+<div class="split">
+<div><label>Kos Sebelum Pengurusan (RM)</label><input type="number" id="pengKosTotal" value="200000"></div>
+<div><label>Contingency (%)</label><input type="number" id="pengContingency" value="10"></div>
+</div>
+<button class="btn btn-calc" onclick="calcPengurusan()">⚡ Kira Kos Pengurusan</button>
+<div class="result-card" id="pengRes" style="display:none"></div>
+</div></div>
+
+<div id="sub-eng-kos" class="sub-content"><div class="card"><h3>🏡 Anggaran Kos Rumah</h3>
+<div class="split">
+<div><label>Saiz Lantai (m²)</label><input type="number" id="rumahSaiz" value="100" min="1"></div>
+<div><label>Bilangan Tingkat</label><input type="number" id="rumahTingkat" value="1" min="1"></div>
+</div>
+<div class="split3">
+<div><label>Bilik Air</label><input type="number" id="rumahBilikAir" value="2" min="0"></div>
+<div><label>Dapur</label><input type="number" id="rumahDapur" value="1" min="0"></div>
+<div><label>Tandas Luar</label><input type="number" id="rumahTandas" value="0" min="0"></div>
+</div>
+<div class="split3">
+<div><label>Bilik Tidur</label><input type="number" id="rumahBilikTidur" value="3" min="0"></div>
+<div><label>Bilik Stor/Utiliti</label><input type="number" id="rumahStor" value="1" min="0"></div>
+<div><label>Ruang Tamu</label><input type="number" id="rumahTamu" value="1" min="0"></div>
+</div>
+<div><label>Kualiti</label><select id="rumahKualiti">
+<option value="bajet">Bajet / Ekonomi (RM1,300-1,700/m²)</option>
+<option value="standard" selected>Standard (RM1,700-2,100/m²)</option>
+<option value="medium">Medium (RM2,100-2,600/m²)</option>
+<option value="high">Premium (RM2,600-3,500/m²)</option>
+</select></div>
+<button class="btn btn-calc" onclick="calcKosRumah()">⚡ Anggar Kos</button>
+<div class="result-card" id="rumahRes" style="display:none"></div>
+</div></div>
+</div>
+
+<!-- TAB 5: FINANCE -->
+<div id="tab-finance" class="tab-content">
+<div class="card">
+<h3>💰 Finance Calculators</h3>
+<div class="sub-bar">
+<button class="sub-tab-btn" onclick="showSub('fin-mudah','tab-finance')">Faedah Mudah</button>
+<button class="sub-tab-btn" onclick="showSub('fin-compound','tab-finance')">Compound</button>
+<button class="sub-tab-btn" onclick="showSub('fin-pinjaman','tab-finance')">Pinjaman</button>
+<button class="sub-tab-btn" onclick="showSub('fin-zakat','tab-finance')">Zakat</button>
+<button class="sub-tab-btn" onclick="showSub('fin-cukai','tab-finance')">Cukai</button>
+</div>
+</div>
+
+<div id="fin-mudah" class="sub-content"><div class="card">
+<h3>💵 Faedah Mudah</h3>
+<div class="split">
+<div><label>Prinsipal (RM)</label><input type="number" id="mudahP" value="10000"></div>
+<div><label>Kadar (%/tahun)</label><input type="number" id="mudahR" value="5" step="0.1"></div>
+</div>
+<div><label>Masa (tahun)</label><input type="number" id="mudahT" value="5"></div>
+<button class="btn btn-calc" onclick="calcMudah()">⚡ Kira</button>
+<div class="result-card" id="mudahResult" style="display:none"></div>
+</div></div>
+
+<div id="fin-compound" class="sub-content"><div class="card">
+<h3>📈 Faedah Kompaun</h3>
+<div class="split">
+<div><label>Prinsipal (RM)</label><input type="number" id="compP" value="10000"></div>
+<div><label>Kadar (%/tahun)</label><input type="number" id="compR" value="6" step="0.1"></div>
+</div>
+<div class="split">
+<div><label>Masa (tahun)</label><input type="number" id="compT" value="10"></div>
+<div><label>Compounding/tahun</label><input type="number" id="compN" value="12"></div>
+</div>
+<button class="btn btn-calc" onclick="calcCompound()">⚡ Kira</button>
+<div class="result-card" id="compResult" style="display:none"></div>
+</div></div>
+
+<div id="fin-pinjaman" class="sub-content"><div class="card">
+<h3>🏦 Kalkulator Pinjaman</h3>
+<div class="split">
+<div><label>Jumlah Pinjaman (RM)</label><input type="number" id="loanAmt" value="300000"></div>
+<div><label>Kadar (%/tahun)</label><input type="number" id="loanRate" value="4.5" step="0.1"></div>
+</div>
+<div><label>Tempoh (tahun)</label><input type="number" id="loanYears" value="30"></div>
+<button class="btn btn-calc" onclick="calcLoan()">⚡ Kira</button>
+<div class="result-card" id="loanResult" style="display:none"></div>
+</div></div>
+
+<div id="fin-zakat" class="sub-content"><div class="card">
+<h3>🕌 Kalkulator Zakat Pendapatan</h3>
+<p style="font-size:.85em;color:#fbbf24;margin-bottom:10px;font-weight:bold">💼 Pendapatan</p>
+<div class="split">
+<div><label>Gaji Bulanan Kasar (RM)</label><input type="number" id="zakatInc" value="5500"></div>
+<div><label>Negeri</label>
+<select id="zakatNegeri">
+<option value="12000">Selangor</option>
+<option value="12000">Kuala Lumpur</option>
+<option value="10800">Johor</option>
+<option value="11400">Pulau Pinang</option>
+<option value="10200">Perak</option>
+<option value="9600">Kedah</option>
+<option value="9000">Kelantan</option>
+<option value="9600">Terengganu</option>
+<option value="10200">Pahang</option>
+<option value="11400">Negeri Sembilan</option>
+<option value="11400">Melaka</option>
+<option value="9000">Perlis</option>
+<option value="10800">Sabah</option>
+<option value="11400">Sarawak</option>
+</select></div>
+</div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:12px;margin-bottom:10px;font-weight:bold">👤 Status & Tanggungan (Had Kifayah)</p>
+<div class="split">
+<div><label>Status Perkahwinan</label>
+<select id="zakatStatus" onchange="updateZakatStatus()">
+<option value="bujang">Bujang</option>
+<option value="berkahwin-l">Berkahwin (Lelaki - tanggung isteri)</option>
+<option value="berkahwin-p">Berkahwin (Perempuan - tanggung suami)</option>
+</select></div>
+<div><label>Had Kifayah Diri (RM/tahun)</label><input type="number" id="zakatDiri" value="15000"></div>
+</div>
+<div class="split" id="zakatPasanganRow">
+<div><label>Had Kifayah Pasangan (RM/tahun)</label><input type="number" id="zakatKifayahPasangan" value="15000"></div>
+<div><label>Bilangan Anak</label><input type="number" id="zakatAnak" value="2" min="0"></div>
+</div>
+<div id="zakatAnakKategoriRow">
+<p style="font-size:.8em;color:#94a3b8;margin:8px 0 4px 0">Kategori Anak (untuk kiraan Had Kifayah):</p>
+<div class="split">
+<div><label>Pra-sekolah / Tadika</label><input type="number" id="zakatAnakPrasekolah" value="0" min="0"></div>
+<div><label>Sekolah Rendah</label><input type="number" id="zakatAnakRendah" value="0" min="0"></div>
+</div>
+<div class="split">
+<div><label>Sekolah Menengah</label><input type="number" id="zakatAnakMenengah" value="0" min="0"></div>
+<div><label>IPT / Kolej (18+ tahun)</label><input type="number" id="zakatAnakIPT" value="0" min="0"></div>
+</div>
+</div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:12px;margin-bottom:10px;font-weight:bold">💰 Potongan</p>
+<div class="split">
+<div><label>Caruman KWSP Pekerja (RM/bulan)</label><input type="number" id="zakatKWSP" value="605"></div>
+<div><label>Potongan Lain (RM/bulan)</label><input type="number" id="zakatLain" value="0"></div>
+</div>
+<div class="chk-row"><input type="checkbox" id="zakatAutoKWSP" checked><label for="zakatAutoKWSP">Auto-kira KWSP 11% dari gaji</label></div>
+
+<p style="font-size:.8em;color:#94a3b8;margin-top:8px">ℹ️ Zakat 2.5% daripada pendapatan bersih (selepas tolak Had Kifayah + KWSP)</p>
+<button class="btn btn-calc" onclick="calcZakat()">⚡ Kira Zakat</button>
+<div class="result-card" id="zakatResult" style="display:none"></div>
+</div></div>
+
+<div id="fin-cukai" class="sub-content"><div class="card">
+<h3>📋 Cukai Pendapatan LHDN 2024</h3>
+<div><label>Pendapatan Tahunan Kasar (RM)</label><input type="number" id="cukaiInc" value="60000"></div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:12px;font-weight:bold">📝 Pelepasan Cukai</p>
+<div class="split">
+<div><label>Pelepasan Diri (RM)</label><input type="number" id="cukaiDiri" value="9000"></div>
+<div><label>Pelepasan Isteri (RM)</label><input type="number" id="cukaiIsteri" value="0"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Anak</label><input type="number" id="cukaiAnak" value="0" min="0"></div>
+<div><label>Jenis Anak</label>
+<select id="cukaiAnakType">
+<option value="2000">Bawah 18 tahun (RM 2,000)</option>
+<option value="8000">18+ dalam pengajian tinggi (RM 8,000)</option>
+</select></div>
+</div>
+<div class="split">
+<div><label>Insurans Hayat + KWSP (RM)</label><input type="number" id="cukaiInsurans" value="0" max="7000"></div>
+<div><label>Insurans Pendidikan (RM)</label><input type="number" id="cukaiEdu" value="0" max="3000"></div>
+</div>
+<div class="split">
+<div><label>Ibu Bapa (RM)</label><input type="number" id="cukaiIbuBapa" value="0" max="2000"></div>
+<div><label>Pelepasan Lain-lain (RM)</label><input type="number" id="cukaiLain" value="0"></div>
+</div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:12px;font-weight:bold">🕌 Zakat (untuk Rebat)</p>
+<div class="split">
+<div><label>Rebat Zakat (RM)</label><input type="number" id="cukaiRebatZakat" value="0"></div>
+<div><label>&nbsp;</label><button class="btn btn-primary" onclick="autoKiraZakatCukai()" style="width:100%">⚡ Auto-kira Zakat</button></div>
+</div>
+<p style="font-size:.75em;color:#94a3b8;margin-top:4px">ℹ️ Klik "Auto-kira Zakat" untuk kira automatik berdasarkan pendapatan & pelepasan di atas (KWSP 11% + Had Kifayah RM15,000)</p>
+
+<button class="btn btn-calc" onclick="calcCukai()" style="margin-top:10px">⚡ Kira</button>
+<div class="result-card" id="cukaiResult" style="display:none"></div>
+</div></div>
+</div>
+
+<!-- TAB 6: PEKERJA -->
+<div id="tab-pekerja" class="tab-content">
+<div class="card">
+<h3>👷 Pekerja Calculators</h3>
+<div class="sub-bar">
+<button class="sub-tab-btn" onclick="showSub('pek-guru','tab-pekerja')">Guru</button>
+<button class="sub-tab-btn" onclick="showSub('pek-pa','tab-pekerja')">Penjawat Awam</button>
+<button class="sub-tab-btn" onclick="showSub('pek-swasta','tab-pekerja')">Pekerja Swasta</button>
+<button class="sub-tab-btn" onclick="showSub('pek-cukai','tab-pekerja')">Cukai 2024 (LHDN)</button>
+<button class="sub-tab-btn" onclick="showSub('pek-kwsp','tab-pekerja')">KWSP</button>
+</div>
+</div>
+
+<div id="pek-guru" class="sub-content"><div class="card">
+<h3>👨‍🏫 Pengiraan Guru</h3>
+<div class="split">
+<div><label>Gaji Asas (RM)</label><input type="number" id="guruGaji" value="3500"></div>
+<div><label>Elaun (RM)</label><input type="number" id="guruElaun" value="500"></div>
+</div>
+<div class="split">
+<div><label>Pendapatan Tuisyen (RM)</label><input type="number" id="guruTuisyen" value="1000"></div>
+<div></div>
+</div>
+<div class="chk-row"><input type="checkbox" id="guruBuku"><label for="guruBuku">Elaun Buku (RM1,000)</label></div>
+<div class="chk-row"><input type="checkbox" id="guruKurs"><label for="guruKurs">Elaun Kursus (RM500)</label></div>
+<button class="btn btn-calc" onclick="calcGuru()">⚡ Kira</button>
+<div class="result-card" id="guruResult" style="display:none"></div>
+</div></div>
+
+<div id="pek-pa" class="sub-content"><div class="card">
+<h3>🏛️ Penjawat Awam</h3>
+<div class="split">
+<div><label>Gaji Asas (RM)</label><input type="number" id="paGaji" value="4000"></div>
+<div><label>Elaun (RM)</label><input type="number" id="paElaun" value="800"></div>
+</div>
+<div class="split">
+<div><label>Tahun Perkhidmatan</label><input type="number" id="paTahun" value="20"></div>
+<div></div>
+</div>
+<div class="chk-row"><input type="checkbox" id="paPencen"><label for="paPencen">Skim Pencen</label></div>
+<button class="btn btn-calc" onclick="calcPA()">⚡ Kira</button>
+<div class="result-card" id="paResult" style="display:none"></div>
+</div></div>
+
+<div id="pek-swasta" class="sub-content"><div class="card">
+<h3>💼 Pekerja Swasta</h3>
+<div class="split">
+<div><label>Gaji Asas (RM)</label><input type="number" id="swastaGaji" value="3000"></div>
+<div><label>OT Jam/bulan</label><input type="number" id="swastaOTJam" value="20"></div>
+</div>
+<div class="split">
+<div><label>Bonus (RM)</label><input type="number" id="swastaBonus" value="0"></div>
+<div></div>
+</div>
+<div class="chk-row"><input type="checkbox" id="swastaOTWeekend"><label for="swastaOTWeekend">OT Hujung Minggu (2x)</label></div>
+<button class="btn btn-calc" onclick="calcSwasta()">⚡ Kira</button>
+<div class="result-card" id="swastaResult" style="display:none"></div>
+</div></div>
+
+<div id="pek-cukai" class="sub-content"><div class="card">
+<h3>📋 Cukai Pendapatan 2024 (LHDN)</h3>
+<div><label>Pendapatan Tahunan Kasar (RM)</label><input type="number" id="workTaxIncome" value="60000"></div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:12px;font-weight:bold">📝 Pelepasan Cukai</p>
+<div class="split">
+<div><label>Pelepasan Diri (RM)</label><input type="number" id="workTaxDiri" value="9000"></div>
+<div><label>Pelepasan Isteri (RM)</label><input type="number" id="workTaxIsteri" value="0"></div>
+</div>
+<div class="split">
+<div><label>Bilangan Anak</label><input type="number" id="workTaxAnak" value="0" min="0"></div>
+<div><label>Jenis Anak</label>
+<select id="workTaxAnakType">
+<option value="2000">Bawah 18 tahun (RM 2,000)</option>
+<option value="8000">18+ dalam pengajian tinggi (RM 8,000)</option>
+</select></div>
+</div>
+<div class="split">
+<div><label>Insurans Hayat + KWSP (RM)</label><input type="number" id="workTaxInsurans" value="0" max="7000"></div>
+<div><label>Insurans Pendidikan (RM)</label><input type="number" id="workTaxEdu" value="0" max="3000"></div>
+</div>
+<div class="split">
+<div><label>Ibu Bapa (RM)</label><input type="number" id="workTaxIbuBapa" value="0" max="2000"></div>
+<div><label>Pelepasan Lain-lain (RM)</label><input type="number" id="workTaxLain" value="0"></div>
+</div>
+
+<p style="font-size:.85em;color:#fbbf24;margin-top:12px;font-weight:bold">🕌 Zakat (untuk Rebat)</p>
+<div class="split">
+<div><label>Rebat Zakat (RM)</label><input type="number" id="workTaxRebatZakat" value="0"></div>
+<div><label>&nbsp;</label><button class="btn btn-primary" onclick="autoKiraZakatPekerja()" style="width:100%">⚡ Auto-kira Zakat</button></div>
+</div>
+<p style="font-size:.75em;color:#94a3b8;margin-top:4px">ℹ️ Klik "Auto-kira Zakat" untuk kira automatik berdasarkan pendapatan & pelepasan di atas (KWSP 11% + Had Kifayah RM15,000)</p>
+
+<button class="btn btn-calc" onclick="calcTax2024()" style="margin-top:10px">⚡ Kira</button>
+<div class="result-card" id="workTaxResult" style="display:none"></div>
+</div></div>
+
+<div id="pek-kwsp" class="sub-content"><div class="card">
+<h3>🏦 Kalkulator KWSP</h3>
+<div class="split">
+<div><label>Gaji Bulanan (RM)</label><input type="number" id="kwspGaji" value="5000"></div>
+<div><label>Umur Semasa</label><input type="number" id="kwspUmur" value="35"></div>
+</div>
+<div><label>Tahun Hingga Bersara</label><input type="number" id="kwspTahun" value="30"></div>
+<button class="btn btn-calc" onclick="calcKWSP()">⚡ Kira</button>
+<div class="result-card" id="kwspResult" style="display:none"></div>
+</div></div>
+</div>
+</div>
+
+<script>
+/* ===== HELPER ===== */
+function RM(v){return 'RM '+Number(v).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function showRes(id,html){var el=document.getElementById(id);el.style.display='block';el.innerHTML=html;}
+function showErr(id,msg){var el=document.getElementById(id);el.style.display='block';el.innerHTML='<span class="err">'+msg+'</span>';}
+
+/* ===== TAB NAVIGATION ===== */
+function showTab(name){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.classList.remove('active');
+    var oc=b.getAttribute('onclick')||'';
+    if(oc.indexOf("'"+name+"'")>-1)b.classList.add('active');
+  });
+  var el=document.getElementById('tab-'+name);
+  if(el)el.classList.add('active');
+}
+function showSub(subId,tabId){
+  var tab=document.getElementById(tabId);
+  if(!tab)return;
+  tab.querySelectorAll('.sub-content').forEach(t=>t.classList.remove('active'));
+  tab.querySelectorAll('.sub-tab-btn').forEach(b=>b.classList.remove('active'));
+  var el=document.getElementById(subId)||document.getElementById('sub-'+subId);
+  if(el)el.classList.add('active');
+  // Highlight butang yang diklik
+  var btns=tab.querySelectorAll('.sub-tab-btn');
+  for(var i=0;i<btns.length;i++){
+    var oc=btns[i].getAttribute('onclick')||'';
+    if(oc.indexOf("'"+subId+"'")>-1){
+      btns[i].classList.add('active');
+      break;
+    }
+  }
+}
+
+/* ===== SAINS ===== */
+var sciExpr='';
+var sciPending=null;
+function sciFmt(n){if(!isFinite(n)||isNaN(n))return 'Error';return String(parseFloat(n.toFixed(10)));}
+function sciApply(fn,v){
+  if(fn==='sin')return Math.sin(v*Math.PI/180);
+  if(fn==='cos')return Math.cos(v*Math.PI/180);
+  if(fn==='tan')return Math.tan(v*Math.PI/180);
+  if(fn==='log')return Math.log10(v);
+  if(fn==='sqrt')return Math.sqrt(v);
+  if(fn==='pow')return v*v;
+  return v;
+}
+function sciUpdate(){
+  var d=document.getElementById('disp-sci');
+  if(sciPending&&sciExpr===''){d.textContent=(sciPending==='sqrt')?'√':sciPending;}
+  else{d.textContent=sciExpr||'0';}
+}
+function appendVal(v){
+  if(sciExpr==='Error')sciExpr='';
+  if(sciPending&&(v==='+'||v==='-'||v==='*'||v==='/')){
+    sciExpr=sciFmt(sciApply(sciPending,parseFloat(sciExpr)||0));
+    sciPending=null;
+  }
+  sciExpr+=v;sciUpdate();
+}
+function insertVal(v){sciExpr+=String(v);sciPending=null;sciUpdate();}
+function insertFunc(fn){
+  if(sciExpr!==''&&/^[0-9.]+$/.test(sciExpr)){
+    sciExpr=sciFmt(sciApply(fn,parseFloat(sciExpr)||0));
+    sciPending=null;
+  }else{
+    sciPending=fn;
+    sciExpr='';
+  }
+  sciUpdate();
+}
+function clearSci(){sciExpr='';sciPending=null;sciUpdate();}
+function delSci(){sciExpr=sciExpr.slice(0,-1);sciUpdate();}
+function calcSci(){
+  var r;
+  try{
+    if(sciPending){r=sciApply(sciPending,parseFloat(sciExpr)||0);sciPending=null;}
+    else{r=Function('"use strict";return('+sciExpr+')')();}
+  }catch(e){r=NaN;}
+  sciExpr=sciFmt(r);
+  sciUpdate();
+}
+
+/* ===== CURRENCY ===== */
+var fxRates={USD:1,MYR:4.72,EUR:0.92,GBP:0.79,IDR:16000,PHP:58,THB:32,SGD:1.35,JPY:155,CNY:7.25};
+function refreshRates(){
+  fetch('https://open.er-api.com/v6/latest/USD')
+  .then(r=>r.json())
+  .then(d=>{
+    if(d&&d.rates){
+      var map={USD:1,MYR:d.rates.MYR||4.72,EUR:d.rates.EUR||0.92,GBP:d.rates.GBP||0.79,IDR:d.rates.IDR||16000,PHP:d.rates.PHP||58,THB:d.rates.THB||32,SGD:d.rates.SGD||1.35,JPY:d.rates.JPY||155,CNY:d.rates.CNY||7.25};
+      fxRates=map;
+      var el=document.getElementById('curResult');
+      el.style.display='block';
+      el.innerHTML='<span style="color:#22c55e">✅ Kadar terkini dimuat dari API</span>';
+    }
+  })
+  .catch(()=>{
+    var el=document.getElementById('curResult');
+    el.style.display='block';
+    el.innerHTML='<span class="warn">Rangkaian gagal — guna kadar statik (anggaran)</span>';
+  });
+}
+function convertCurrency(){
+  var amt=parseFloat(document.getElementById('curAmount').value);
+  var from=document.getElementById('curFrom').value;
+  var to=document.getElementById('curTo').value;
+  if(!amt||amt<=0){showErr('curResult','Sila masukkan jumlah yang sah');return;}
+  var inUSD=amt/(fxRates[from]||1);
+  var result=inUSD*(fxRates[to]||1);
+  showRes('curResult','<b>'+amt.toLocaleString()+' '+from+' = '+Number(result).toLocaleString('en-MY',{maximumFractionDigits:2})+' '+to+'</b>');
+}
+
+/* ===== BMI ===== */
+function calcBMI(){
+  var w=parseFloat(document.getElementById('bmiWeight').value);
+  var h=parseFloat(document.getElementById('bmiHeight').value);
+  if(!w||!h||w<=0||h<=0){showErr('bmiResult','Sila masukkan berat dan tinggi yang sah');return;}
+  var bmi=w/(h*h);
+  var cat='';
+  if(bmi<18.5)cat='Kurus (Underweight)';
+  else if(bmi<25)cat='Normal ✅';
+  else if(bmi<30)cat='Berat Lebih (Overweight)';
+  else cat='Obesiti ⚠️';
+  showRes('bmiResult','<b>BMI: '+bmi.toFixed(1)+'</b><br>Kategori: '+cat);
+}
+
+/* ===== ENG: UNIT ===== */
+var wf={kg:1000,g:1,lb:453.592,oz:28.35,t:1e6};
+var units={length:{m:1,cm:0.01,km:1000,in:0.0254,ft:0.3048,mi:1609.34,yd:0.9144},weight:{kg:1,g:0.001,lb:0.4536,oz:0.02835,t:1000},temperature:{c:1,f:1.8,k:1},pressure:{pa:1,bar:1e5,psi:6895,atm:101325,mmhg:133.322},speed:{ms:1,kmh:0.2778,mph:0.447,knot:0.5144}};
+var uL={length:{m:'Meter',cm:'Centimeter',km:'Kilometer',in:'Inci',ft:'Kaki',mi:'Mile',yd:'Yard'},weight:{kg:'Kilogram',g:'Gram',lb:'Pound',oz:'Ounce',t:'Tan'},temperature:{c:'Celsius',f:'Fahrenheit',k:'Kelvin'},pressure:{pa:'Pascal',bar:'Bar',psi:'PSI',atm:'Atm',mmhg:'mmHg'},speed:{ms:'m/s',kmh:'km/j',mph:'mph',knot:'Knot'}};
+function updateUnits(){
+  var ty=document.getElementById('unitType').value,opts=uL[ty]||{},list=Object.keys(opts),fr=document.getElementById('fromUnit'),to=document.getElementById('toUnit');
+  if(!fr||!to)return;
+  fr.innerHTML='';to.innerHTML='';
+  list.forEach(function(k){
+    var o1=document.createElement('option');o1.value=k;o1.textContent=opts[k];fr.appendChild(o1);
+    var o2=document.createElement('option');o2.value=k;o2.textContent=opts[k];to.appendChild(o2);
+  });
+  if(to.options.length>1)to.selectedIndex=1;
+}
+function convertUnit(){
+  var a=parseFloat(document.getElementById('unitAmount').value);
+  var ty=document.getElementById('unitType').value;
+  var f=document.getElementById('fromUnit').value;
+  var t=document.getElementById('toUnit').value;
+  if(isNaN(a)){showErr('unitResult','Sila masukkan jumlah');return;}
+  var base,res;
+  if(ty==='temperature'){
+    if(f==='c')base=a;else if(f==='f')base=(a-32)/1.8;else base=a-273.15;
+    if(t==='c')res=base;else if(t==='f')res=base*1.8+32;else res=base+273.15;
+  }else if(ty==='weight'){var gv=a*wf[f];res=gv/wf[t];}
+  else{base=a*units[ty][f];res=base/units[ty][t];}
+  showRes('unitResult',a+' '+f+' = <b>'+res.toFixed(4)+' '+t+'</b>');
+}
+
+/* ===== ENG: BAHAN ===== */
+function calcBahan(){
+  var p=parseFloat(document.getElementById('bahanP').value)||0;
+  var l=parseFloat(document.getElementById('bahanL').value)||0;
+  var t=parseFloat(document.getElementById('bahanT').value)||0;
+  var n=document.getElementById('bahanNisbah').value;
+  var str=document.getElementById('bahanStruktur').value;
+  if(p<=0||l<=0||t<=0){showErr('bahanRes','Sila masukkan P, L, T');return;}
+  var v=p*l*t;
+  var sim,pas,bat;
+  if(n==='1:1.5:3'){sim=v*8;pas=v*0.42;bat=v*0.84;}
+  else if(n==='1:2:4'){sim=v*5.5;pas=v*0.48;bat=v*0.96;}
+  else if(n==='1:3:6'){sim=v*3.5;pas=v*0.55;bat=v*1.1;}
+  else if(n==='1:4:8'){sim=v*2.5;pas=v*0.6;bat=v*1.2;}
+  else{sim=v*6.5;pas=v*0.45;bat=v*0.85;}
+  var ber=v*2400;
+  var besi=calcBesi(p,l,t,str);
+  var bb=parseFloat(besi.total)||0;
+  var hs=parseFloat(document.getElementById('hargaSimen').value)||20;
+  var hpa=parseFloat(document.getElementById('hargaPasir').value)||50;
+  var hba=parseFloat(document.getElementById('hargaBatu').value)||60;
+  var hbe=parseFloat(document.getElementById('hargaBesi').value)||3.8;
+  var hbu=parseFloat(document.getElementById('hargaBuruh').value)||150;
+  var hfw=parseFloat(document.getElementById('hargaFormwork').value)||40;
+  var kSim=sim*hs,kPas=pas*hpa,kBat=bat*hba,kBes=bb*hbe;
+  var kBur=v*hbu,kFw=(p*l)*hfw;
+  var sub=kSim+kPas+kBat+kBes+kBur+kFw;
+  var wast=sub*0.05;
+  var tot=sub+wast;
+  showRes('bahanRes',
+    'Isipadu: <b>'+v.toFixed(2)+' m³</b><br>'+
+    'Simen: <b>'+sim.toFixed(1)+' bag</b> | Pasir: <b>'+pas.toFixed(2)+' m³</b> | Batu: <b>'+bat.toFixed(2)+' m³</b><br>'+
+    'Berat Konkrit: <b>'+ber.toFixed(0)+' kg</b><br>'+
+    'Besi utama: <b>'+besi.utama+' ('+besi.buKg+')</b><br>'+
+    'Besi link: <b>'+besi.link+' ('+besi.blKg+')</b><br>'+
+    '<hr>Kos Simen: '+RM(kSim)+'<br>Kos Pasir: '+RM(kPas)+'<br>Kos Batu: '+RM(kBat)+'<br>Kos Besi: '+RM(kBes)+'<br>Kos Buruh: '+RM(kBur)+'<br>Kos Formwork: '+RM(kFw)+'<br>'+
+    '<hr>Subtotal: '+RM(sub)+'<br>Wastage 5%: '+RM(wast)+'<br><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+function calcBesi(p,l,t,str){
+  var utama=0,link=0,beratU=0,beratL=0;
+  if(str==='beam'){utama=4;link=Math.ceil(p/0.15);beratU=utama*p*1.578;beratL=link*((l+t)*2+0.2)*0.395;}
+  else if(str==='tiang'){utama=(l>=0.4)?6:4;link=Math.ceil(t/0.15);beratU=utama*t*1.578;beratL=link*((l+l)*2+0.2)*0.617;}
+  else{var luas=p*l;beratU=luas*1.5;link=0;}
+  return{utama:utama+' batang',link:link+' link',buKg:beratU.toFixed(1)+' kg',blKg:beratL.toFixed(1)+' kg',total:(beratU+beratL).toFixed(1)+' kg'};
+}
+
+/* ===== ENG: PAIP ===== */
+function calcPaipRumah(){
+  var d=parseFloat(document.getElementById('paipDalam').value)||0;
+  var l=parseFloat(document.getElementById('paipLuar').value)||0;
+  var m=parseFloat(document.getElementById('paipMeter').value)||0;
+  var hd=parseFloat(document.getElementById('hargaAbsDalam').value)||7;
+  var hl=parseFloat(document.getElementById('hargaPvcLuar').value)||4;
+  var hm=parseFloat(document.getElementById('hargaPvcMeter').value)||22;
+  if(!d&&!l&&!m){showErr('paipRumahRes','Sila masukkan panjang paip');return;}
+  var kd=d*hd,kl=l*hl,km=m*hm;
+  var sub=kd+kl+km;
+  var fit=sub*0.3;
+  var bur=sub*0.5;
+  var tot=sub+fit+bur;
+  showRes('paipRumahRes',
+    'ABS: '+d+'m × '+RM(hd)+' = '+RM(kd)+'<br>'+
+    'PVC: '+l+'m × '+RM(hl)+' = '+RM(kl)+'<br>'+
+    'PVC50: '+m+'m × '+RM(hm)+' = '+RM(km)+'<br>'+
+    '<hr>Subtotal: '+RM(sub)+'<br>Fitting (30%): '+RM(fit)+'<br>Buruh (50%): '+RM(bur)+'<br>'+
+    '<b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+
+/* ===== ENG: CAT ===== */
+function calcCat(){
+  var a=parseFloat(document.getElementById('catArea').value)||0;
+  if(a<=0){showErr('catRes','Sila masukkan luas dinding');return;}
+  var l=a/5;
+  showRes('catRes','Keperluan Cat: <b>'+l.toFixed(2)+' Liter</b> (1L = 5 m²)');
+}
+
+/* ===== ENG: MASA ===== */
+function convertMasa(){
+  var v=parseFloat(document.getElementById('masaVal').value)||0;
+  var f=document.getElementById('masaFrom').value;
+  var t=document.getElementById('masaTo').value;
+  var fac={s:1,min:60,h:3600,d:86400};
+  var r=v*fac[f]/fac[t];
+  showRes('masaRes',v+' '+f+' = <b>'+r.toFixed(4)+' '+t+'</b>');
+}
+
+/* ===== ENG: DAPUR ===== */
+function calcDapur(){
+  var c=parseFloat(document.getElementById('dapurVal').value)||0;
+  if(c<=0){showErr('dapurRes','Sila masukkan bilangan cawan');return;}
+  var ml=c*240;
+  showRes('dapurRes',c+' cawan = <b>'+ml.toFixed(0)+' ml</b> (1 cawan = 240ml)');
+}
+
+/* ===== ENG: PRECISION ===== */
+function convertPrecision(){
+  var v=parseFloat(document.getElementById('precVal').value)||0;
+  var u=document.getElementById('precUnit').value;
+  var f={mm:0.001,um:1e-6,nm:1e-9,thou:0.0000254,in:0.0254,cm:0.01,m:1};
+  var b=v*f[u];
+  showRes('precRes',
+    (b/f.mm).toFixed(3)+' mm<br>'+(b/f.um).toFixed(3)+' µm<br>'+(b/f.nm).toFixed(2)+' nm<br>'+
+    (b/f.thou).toFixed(2)+' thou<br>'+(b/f.in).toFixed(4)+' in<br>'+(b/f.cm).toFixed(4)+' cm<br>'+(b/f.m).toFixed(6)+' m');
+}
+
+/* ===== ENG: TANGKI ===== */
+function calcTangki(){
+  var p=parseInt(document.getElementById('tangkiPenghuni').value)||4;
+  var h=parseInt(document.getElementById('tangkiHari').value)||2;
+  var kp=p*200,sz=kp*h,c='';
+  if(sz<=500)c='1 × Poly 500L';
+  else if(sz<=1000)c='1 × Poly 1000L';
+  else if(sz<=1500)c='1 × Poly 1500L';
+  else if(sz<=2000)c='1 × Poly 2000L';
+  else c=Math.ceil(sz/2000)+' × Poly 2000L';
+  showRes('tangkiRes','Keperluan: <b>'+kp+' L/hari</b><br>Saiz minimum: <b>'+sz+' L</b><br>Cadangan: <b>'+c+'</b>');
+}
+function calcTangkiKos(){
+  var j=document.getElementById('tangkiJenis').value;
+  var hp={poly500:parseFloat(document.getElementById('hargaPoly500').value)||350,poly1000:parseFloat(document.getElementById('hargaPoly1000').value)||600,poly1500:parseFloat(document.getElementById('hargaPoly1500').value)||900,poly2000:parseFloat(document.getElementById('hargaPoly2000').value)||1150};
+  var hz=hp[j]||0;
+  var sz=(j==='poly500')?500:(j==='poly1000')?1000:(j==='poly1500')?1500:2000;
+  var fit=hz*0.2,bur=hz*0.3,tot=hz+fit+bur;
+  showRes('tangkiKosRes','Tangki '+sz+'L: <b>'+RM(hz)+'</b><br>Fitting (20%): '+RM(fit)+'<br>Buruh (30%): '+RM(bur)+'<br><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+
+/* ===== ENG: STAND ===== */
+function calcStand(){
+  var tg=parseFloat(document.getElementById('standTinggi').value)||6;
+  var tl=parseFloat(document.getElementById('standTangkiL').value)||2000;
+  var bh=document.getElementById('standBahan').value;
+  if(tg<=0||tl<=0){showErr('standRes','Sila masukkan tinggi & saiz tangki');return;}
+  var tk=tg*0.1,bt=tl+tl*0.025;
+  var tiang=4*tg,beamH=4*2,beamD=4*(tg*0.5),tb=tiang+beamH+beamD;
+  var pm=(bh==='gi2')?5:(bh==='angle')?4:3.5;
+  var bb=tb*pm,kb=bb*5,kk=4*0.5*0.5*0.5*250,kbu=(kb+kk)*0.4,tot=kb+kk+kbu;
+  showRes('standRes',
+    '<b>Stand Tangki '+tg+'m</b><br>Tekanan: <b>'+tk.toFixed(1)+' bar</b><br>Beban: <b>'+bt.toFixed(0)+' kg</b><br>'+
+    'Panjang besi: <b>'+tb.toFixed(1)+' m</b><br>Berat besi: <b>'+bb.toFixed(1)+' kg</b><br>'+
+    'Kos besi: '+RM(kb)+'<br>Kos konkrit: '+RM(kk)+'<br>Kos buruh: '+RM(kbu)+'<br>'+
+    '<b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+
+/* ===== ENG: PIPING ===== */
+function calcPipeSize(){
+  var q=parseFloat(document.getElementById('pipeQ').value)||0;
+  var v=parseFloat(document.getElementById('pipeV').value)||1.5;
+  if(q<=0){showErr('pipeSizeRes','Sila masukkan flow rate');return;}
+  var qms=q/60000;
+  var D=Math.sqrt(4*qms/(Math.PI*v));
+  var Dmm=D*1000;
+  showRes('pipeSizeRes','Diameter: <b>'+Dmm.toFixed(1)+' mm</b><br>Flow: '+q+' L/min = '+qms.toFixed(6)+' m³/s<br>Kelajuan: '+v+' m/s');
+}
+function calcPipeVol(){
+  var D=parseFloat(document.getElementById('pipeD2').value)||0;
+  var L=parseFloat(document.getElementById('pipeL2').value)||0;
+  if(D<=0||L<=0){showErr('pipeVolRes','Sila masukkan D & L');return;}
+  var r=D/2/1000;
+  var V=Math.PI*r*r*L;
+  showRes('pipeVolRes','Isipadu: <b>'+V.toFixed(4)+' m³ ('+(V*1000).toFixed(2)+' L)</b>');
+}
+function calcPipeExpand(){
+  var L=parseFloat(document.getElementById('pipeL3').value)||0;
+  var dt=parseFloat(document.getElementById('pipeDT').value)||0;
+  if(!L||!dt){showErr('pipeExpandRes','Sila masukkan L & ΔT');return;}
+  var alpha=12e-6;
+  var dL=alpha*L*dt;
+  showRes('pipeExpandRes','Pembesaran ΔL: <b>'+(dL*1000).toFixed(3)+' mm ('+dL.toFixed(6)+' m)</b><br>(α = 12×10⁻⁶ /°C)');
+}
+function convertPipe(){
+  var i=parseFloat(document.getElementById('pipeInchi').value);
+  var dn=parseFloat(document.getElementById('pipeDN').value);
+  if(!isNaN(i)){
+    document.getElementById('pipeDN').value=(i*25.4).toFixed(0);
+    showRes('pipeConvRes',i+' inci = <b>'+(i*25.4).toFixed(1)+' mm (DN'+Math.round(i*25.4)+')</b>');
+  }else if(!isNaN(dn)){
+    document.getElementById('pipeInchi').value=(dn/25.4).toFixed(2);
+    showRes('pipeConvRes','DN'+dn+' = <b>'+(dn/25.4).toFixed(2)+' inci</b>');
+  }else{showErr('pipeConvRes','Sila masukkan inci ATAU DN');}
+}
+
+/* ===== ENG: BATA ===== */
+function calcBata(){
+  var p=parseFloat(document.getElementById('bataP').value)||0;
+  var t=parseFloat(document.getElementById('bataT').value)||0;
+  if(p<=0||t<=0){showErr('bataRes','Sila masukkan P & T');return;}
+  var luas=p*t;
+  var bata=luas*60;
+  var mortar=luas*0.02;
+  var simen=luas*0.3;
+  var pasir=luas*0.015;
+  var hb=parseFloat(document.getElementById('hargaBataUnit').value)||0.5;
+  var hs=parseFloat(document.getElementById('hargaBataSimen').value)||20;
+  var hpa=parseFloat(document.getElementById('hargaBataPasir').value)||50;
+  var kosB=bata*hb,kosS=simen*hs,kosP=pasir*hpa,tot=kosB+kosS+kosP;
+  showRes('bataRes',
+    'Luas: <b>'+luas.toFixed(2)+' m²</b><br>Bil. Bata: <b>'+bata.toFixed(0)+' biji</b><br>Mortar: <b>'+mortar.toFixed(3)+' m³</b><br>Simen: <b>'+simen.toFixed(1)+' bag</b><br>Pasir: <b>'+pasir.toFixed(2)+' m³</b><br>'+
+    '<hr>Kos Bata: '+RM(kosB)+'<br>Kos Simen: '+RM(kosS)+'<br>Kos Pasir: '+RM(kosP)+'<br><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+
+/* ===== ENG: PLASTER ===== */
+function calcPlaster(){
+  var a=parseFloat(document.getElementById('plasterArea').value)||0;
+  var th=parseFloat(document.getElementById('plasterTebal').value)||12;
+  if(a<=0){showErr('plasterRes','Sila masukkan luas');return;}
+  var factor=th/12;
+  var simen=a*0.2*factor;
+  var pasir=a*0.015*factor;
+  var hs=20,hpa=50;
+  var kosS=simen*hs,kosP=pasir*hpa,tot=kosS+kosP;
+  showRes('plasterRes',
+    'Luas: <b>'+a.toFixed(1)+' m²</b> (Tebal: '+th+'mm)<br>Simen: <b>'+simen.toFixed(1)+' bag</b><br>Pasir: <b>'+pasir.toFixed(3)+' m³</b><br>'+
+    '<hr>Kos Simen: '+RM(kosS)+'<br>Kos Pasir: '+RM(kosP)+'<br><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+
+/* ===== ENG: TILES ===== */
+function calcTiles(){
+  var p=parseFloat(document.getElementById('tilesP').value)||0;
+  var l=parseFloat(document.getElementById('tilesL').value)||0;
+  var sz=parseFloat(document.getElementById('tilesSize').value)||0.36;
+  if(p<=0||l<=0){showErr('tilesRes','Sila masukkan P & L');return;}
+  var luas=p*l;
+  var count=Math.ceil((luas/sz)*1.1);
+  var adh=luas*4;
+  var grout=luas*0.5;
+  var ht=parseFloat(document.getElementById('hargaTileKeping').value)||8;
+  var hadh=parseFloat(document.getElementById('hargaTileGam').value)||2;
+  var hg=parseFloat(document.getElementById('hargaTileGrout').value)||3;
+  var kosT=count*ht,kosA=adh*hadh,kosG=grout*hg,tot=kosT+kosA+kosG;
+  showRes('tilesRes',
+    'Luas: <b>'+luas.toFixed(2)+' m²</b><br>Bil. Tiles (+10%): <b>'+count+' keping</b><br>Gam: <b>'+adh.toFixed(1)+' kg</b><br>Grout: <b>'+grout.toFixed(1)+' kg</b><br>'+
+    '<hr>Kos Tiles: '+RM(kosT)+'<br>Kos Gam: '+RM(kosA)+'<br>Kos Grout: '+RM(kosG)+'<br><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(tot)+'</b>');
+}
+
+/* ===== ENG: BUMBUNG ===== */
+function calcBumbung(){
+  var p=parseFloat(document.getElementById('bumbungP').value)||0;
+  var l=parseFloat(document.getElementById('bumbungL').value)||0;
+  var cerun=parseFloat(document.getElementById('bumbungCerun').value)||30;
+  var jenis=document.getElementById('bumbungJenis').value;
+  if(p<=0||l<=0){showErr('bumbungRes','Sila masukkan P & L');return;}
+  var rad=cerun*Math.PI/180;
+  var luas=(p*l)/Math.cos(rad);
+  var unitCount=(jenis==='genting')?Math.ceil(luas*25):Math.ceil(luas*0.5);
+  var kayu=luas*2;
+  var kosM=(jenis==='genting')?luas*55:luas*35;
+  showRes('bumbungRes',
+    'Luas Bumbung: <b>'+luas.toFixed(1)+' m²</b><br>Atap ('+jenis+'): <b>'+unitCount+' keping</b><br>Kayu bumbung: <b>'+kayu.toFixed(1)+' meter</b><br>'+
+    '<hr>Anggaran Kos: <b style="font-size:1.1em;color:#fbbf24">'+RM(kosM)+'</b>');
+}
+
+/* ===== ENG: PAGAR ===== */
+function calcPagar(){
+  var p=parseFloat(document.getElementById('pagarP').value)||0;
+  var t=parseFloat(document.getElementById('pagarT').value)||1.5;
+  var j=document.getElementById('pagarJenis').value;
+  if(p<=0){showErr('pagarRes','Sila masukkan panjang');return;}
+  if(j==='besi'){
+    var besi=p*t*2,konkrit=p*0.1,cat=p*t*0.2,tot=besi*12+konkrit*250+cat*30;
+    showRes('pagarRes','Panjang: '+p+'m | Tinggi: '+t+'m (Besi)<br>Besi Hollow: <b>'+besi.toFixed(1)+' m</b><br>Konkrit Asas: <b>'+konkrit.toFixed(2)+' m³</b><br>Cat Besi: <b>'+cat.toFixed(1)+' Liter</b><br><hr>Anggaran Kos: <b style="font-size:1.1em;color:#fbbf24">'+RM(tot)+'</b>');
+  }else if(j==='konkrit'){
+    var kon=p*t*0.2,besiK=p*t*15,totK=kon*250+besiK*3.8;
+    showRes('pagarRes','Panjang: '+p+'m | Tinggi: '+t+'m (Konkrit)<br>Konkrit: <b>'+kon.toFixed(2)+' m³</b><br>Besi Tetulang: <b>'+besiK.toFixed(1)+' kg</b><br><hr>Anggaran Kos: <b style="font-size:1.1em;color:#fbbf24">'+RM(totK)+'</b>');
+  }else{
+    var luasB=p*t,bata=luasB*60,sem=luasB*0.3,pas=luasB*0.015,totB=bata*0.5+sem*20+pas*50;
+    showRes('pagarRes','Panjang: '+p+'m | Tinggi: '+t+'m (Bata)<br>Bata: <b>'+bata.toFixed(0)+' biji</b><br>Simen: <b>'+sem.toFixed(1)+' bag</b><br>Pasir: <b>'+pas.toFixed(2)+' m³</b><br><hr>Anggaran Kos: <b style="font-size:1.1em;color:#fbbf24">'+RM(totB)+'</b>');
+  }
+}
+
+/* ===== ENG: KOS RUMAH ===== */
+function calcKosRumah(){
+  var sz=parseFloat(document.getElementById('rumahSaiz').value)||0;
+  var tg=parseInt(document.getElementById('rumahTingkat').value)||0;
+  var bilikAir=parseInt(document.getElementById('rumahBilikAir').value)||0;
+  var dapur=parseInt(document.getElementById('rumahDapur').value)||0;
+  var tandas=parseInt(document.getElementById('rumahTandas').value)||0;
+  var bilikTidur=parseInt(document.getElementById('rumahBilikTidur').value)||0;
+  var stor=parseInt(document.getElementById('rumahStor').value)||0;
+  var tamu=parseInt(document.getElementById('rumahTamu').value)||0;
+  var kl=document.getElementById('rumahKualiti').value;
+
+  if(sz<=0){showErr('rumahRes','Sila masukkan saiz lantai');return;}
+  if(tg<=0){showErr('rumahRes','Sila masukkan bilangan tingkat (min 1)');return;}
+
+  var totalArea=sz*tg;
+  var perimeter=4*Math.sqrt(sz);
+  var dindingLuas=perimeter*3.2*tg;  // tinggi dinding 3.2m per tingkat
+  var bumbungLuas=sz*1.15;  // cerun ~15%
+
+  // Kadar asas ikut kualiti (multiplier)
+  var mult=1.0;
+  if(kl==='bajet')mult=0.85;
+  else if(kl==='standard')mult=1.0;
+  else if(kl==='medium')mult=1.20;
+  else if(kl==='high')mult=1.50;
+
+  // Diskaun ikut saiz
+  var discount=1.0;
+  if(totalArea>=150)discount=0.95;
+  if(totalArea>=200)discount=0.90;
+  if(totalArea>=300)discount=0.85;
+
+  // KIRA SETIAP KATEGORI IKUT INPUT SPESIFIK
+  var kTanah=sz*1.5*40*mult*discount;
+  var kAsas=(bilikAir+bilikTidur+dapur+tamu+stor+2)*0.5*450*mult*discount;
+  var kStruktur=totalArea*350*mult*discount;
+  var kDinding=dindingLuas*85*mult*discount;
+  var kPlaster=dindingLuas*2*12*mult*discount;
+  var kBumbung=bumbungLuas*120*mult*discount;
+  var kPintu=((bilikTidur*800)+(bilikAir*600)+(dapur*700)+(tamu*800))*mult*discount;
+  var kPaip=(bilikAir*2500)+(dapur*1200)+(tandas*1500);
+  var kElektrik=(bilikAir+bilikTidur+dapur+stor+tamu+tandas)*600*mult*discount;
+  var kTandas=bilikAir*3500*mult*discount;
+  var kTiles=totalArea*45*mult*discount;
+  var kPagar=perimeter*350*mult*discount;
+  var kCat=dindingLuas*8*mult*discount;
+
+  var subtotal=kTanah+kAsas+kStruktur+kDinding+kPlaster+kBumbung+kPintu+kPaip+kElektrik+kTandas+kTiles+kPagar+kCat;
+  var pengurusan=subtotal*0.05;
+  var totalSebelumContingency=subtotal+pengurusan;
+  var contingency=totalSebelumContingency*0.10;
+  var grandTotal=totalSebelumContingency+contingency;
+
+  var bilikSemua=bilikAir+dapur+tandas+bilikTidur+stor+tamu;
+
+  var out='<b>📐 Spesifikasi:</b><br>'+
+    '  Luas Tapak: <b>'+sz+' m²</b><br>'+
+    '  Bilangan Tingkat: <b>'+tg+'</b><br>'+
+    '  Jumlah Luas Lantai: <b>'+totalArea+' m²</b> ('+sz+' × '+tg+')<br>'+
+    '  Perimeter: <b>'+perimeter.toFixed(1)+' m</b><br>'+
+    '  Luas Dinding: <b>'+dindingLuas.toFixed(1)+' m²</b><br>'+
+    '  Kualiti: <b>'+kl.toUpperCase()+'</b> (×'+mult.toFixed(2)+' multiplier)<br>'+
+    '  Diskaun: <b>'+((1-discount)*100).toFixed(0)+'%</b> (saiz ≥'+(discount===0.85?'300':discount===0.90?'200':discount===0.95?'150':'0')+'m²)<br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>🏠 Bilangan Ruang:</b><br>'+
+    '  Bilik Air: <b>'+bilikAir+'</b> | Dapur: <b>'+dapur+'</b> | Tandas Luar: <b>'+tandas+'</b><br>'+
+    '  Bilik Tidur: <b>'+bilikTidur+'</b> | Stor: <b>'+stor+'</b> | Ruang Tamu: <b>'+tamu+'</b><br>'+
+    '  <b>Total Bilik: '+bilikSemua+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>💰 Pecahan Kos (dikira ikut spec rumah):</b><br><br>'+
+
+    '🏗️ Kerja Tanah & Tapak<br>'+
+    '  '+sz+'m² × 1.5m dalam × RM40/m³ = <b>'+RM(kTanah)+'</b><br>'+
+    '🏛️ Asas & Footing<br>'+
+    '  '+(bilikAir+bilikTidur+dapur+tamu+stor+2)+' tiang × 0.5m³ × RM450 = <b>'+RM(kAsas)+'</b><br>'+
+    '🪨 Struktur (Tiang+Beam+Lantai)<br>'+
+    '  '+totalArea+'m² × RM350/m² = <b>'+RM(kStruktur)+'</b><br>'+
+    '🧱 Dinding Bata<br>'+
+    '  '+dindingLuas.toFixed(1)+'m² × RM85/m² = <b>'+RM(kDinding)+'</b><br>'+
+    '🖌️ Plaster (2× dinding)<br>'+
+    '  '+(dindingLuas*2).toFixed(1)+'m² × RM12/m² = <b>'+RM(kPlaster)+'</b><br>'+
+    '🏠 Bumbung & Atap<br>'+
+    '  '+bumbungLuas.toFixed(1)+'m² × RM120/m² = <b>'+RM(kBumbung)+'</b><br>'+
+    '🚪 Pintu & Tingkap<br>'+
+    '  '+bilikTidur+' bilik × RM800 + '+bilikAir+' air × RM600 + '+dapur+' dapur × RM700 + '+tamu+' tamu × RM800 = <b>'+RM(kPintu)+'</b><br>'+
+    '🚿 Paip Air & Sanitari<br>'+
+    '  '+bilikAir+' bilik air × RM2500 + '+dapur+' dapur × RM1200 + '+tandas+' tandas × RM1500 = <b>'+RM(kPaip)+'</b><br>'+
+    '⚡ Elektrik & Lampu<br>'+
+    '  '+(bilikAir+bilikTidur+dapur+stor+tamu+tandas)+' bilik × RM600 = <b>'+RM(kElektrik)+'</b><br>'+
+    '🛁 Tandas & Bilik Air (Fit-Out)<br>'+
+    '  '+bilikAir+' bilik × RM3500 = <b>'+RM(kTandas)+'</b><br>'+
+    '🔲 Tiles Lantai & Dinding<br>'+
+    '  '+totalArea+'m² × RM45/m² = <b>'+RM(kTiles)+'</b><br>'+
+    '🚧 Pagar & Kerja Luar<br>'+
+    '  '+perimeter.toFixed(1)+'m perimeter × RM350/m = <b>'+RM(kPagar)+'</b><br>'+
+    '🎨 Cat & Kemasan<br>'+
+    '  '+dindingLuas.toFixed(1)+'m² × RM8/m² = <b>'+RM(kCat)+'</b><br>'+
+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Subtotal Pembinaan: '+RM(subtotal)+'</b><br>'+
+    '<b>Pengurusan (5%): '+RM(pengurusan)+'</b><br>'+
+    '<b>Total Sebelum Contingency: '+RM(totalSebelumContingency)+'</b><br>'+
+    '<b>Contingency (10%): '+RM(contingency)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b style="font-size:1.2em;color:#fbbf24">GRAND TOTAL: '+RM(grandTotal)+'</b><br>'+
+    '<b>Kos per m²: '+RM(grandTotal/totalArea)+'/m²</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>📊 Nota:</b><br>'+
+    '  • Setiap kategori dikira ikut spec rumah (bukan peratus generik)<br>'+
+    '  • Multiplier kualiti: Bajet 0.85× | Standard 1.0× | Medium 1.20× | Premium 1.50×<br>'+
+    '  • Diskaun ikut saiz: ≥150m² -5%, ≥200m² -10%, ≥300m² -15%<br>'+
+    '  • Belum termasuk: perabot, aircond, landskap<br>'+
+    '  • Belum termasuk: yuran PBT, TNB, SYABAS<br>'+
+    '  • Untuk anggaran tepat, dapatkan QS atau kontraktor';
+
+  showRes('rumahRes',out);
+}
+
+/* ===== ENG: KERJA TANAH ===== */
+function calcTanah(){
+  var p=parseFloat(document.getElementById('tanahP').value)||0;
+  var l=parseFloat(document.getElementById('tanahL').value)||0;
+  var d=parseFloat(document.getElementById('tanahD').value)||0;
+  if(p<=0||l<=0||d<=0){showErr('tanahRes','Sila masukkan P, L, D');return;}
+  var vol=p*l*d;
+  var luas=p*l;
+  var hGali=parseFloat(document.getElementById('tanahHargaGali').value)||15;
+  var hBuang=parseFloat(document.getElementById('tanahHargaBuang').value)||10;
+  var hIsi=parseFloat(document.getElementById('tanahHargaIsi').value)||35;
+  var hTanda=parseFloat(document.getElementById('tanahHargaTanda').value)||3;
+  var hBuruh=parseFloat(document.getElementById('tanahHargaBuruh').value)||20;
+  var hRata=parseFloat(document.getElementById('tanahHargaRata').value)||5;
+  var kGali=vol*hGali;
+  var kBuang=vol*hBuang;
+  var kIsi=vol*hIsi;
+  var kTanda=luas*hTanda;
+  var kBuruh=vol*hBuruh;
+  var kRata=luas*hRata;
+  var sub=kGali+kBuang+kIsi+kTanda+kBuruh+kRata;
+  showRes('tanahRes',
+    'Isipadu Tanah: <b>'+vol.toFixed(2)+' m³</b> | Luas: <b>'+luas.toFixed(2)+' m²</b><br>'+
+    '<hr>Kos Gali: '+RM(kGali)+'<br>'+
+    'Kos Buang Tanah: '+RM(kBuang)+'<br>'+
+    'Kos Pasir Isi: '+RM(kIsi)+'<br>'+
+    'Kos Tanda Tapak: '+RM(kTanda)+'<br>'+
+    'Kos Buruh: '+RM(kBuruh)+'<br>'+
+    'Kos Rata: '+RM(kRata)+'<br>'+
+    '<hr><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(sub)+'</b>');
+}
+
+/* ===== ENG: ASAS ===== */
+function calcAsas(){
+  var saiz=parseFloat(document.getElementById('asasSaiz').value)||100;
+  var jenis=document.getElementById('asasJenis').value;
+  var bilTiang=parseInt(document.getElementById('asasBilTiang').value)||12;
+  var footing=parseFloat(document.getElementById('asasFooting').value)||0.5;
+  var dalam=parseFloat(document.getElementById('asasDalam').value)||0.8;
+  var hKonkrit=parseFloat(document.getElementById('asasHargaKonkrit').value)||280;
+  var hBesi=parseFloat(document.getElementById('asasHargaBesi').value)||3.8;
+  var hBuruh=parseFloat(document.getElementById('asasHargaBuruh').value)||150;
+  var volFooting=bilTiang*footing;
+  var volPile=0;
+  if(jenis==='pile'){volPile=bilTiang*dalam*0.2;}
+  var totalVol=volFooting+volPile;
+  var besi=totalVol*80;
+  var kKonkrit=totalVol*hKonkrit;
+  var kBesi=besi*hBesi;
+  var kBuruh=totalVol*hBuruh;
+  var sub=kKonkrit+kBesi+kBuruh;
+  showRes('asasRes',
+    'Jenis: <b>'+jenis.toUpperCase()+'</b><br>Bilangan Tiang: <b>'+bilTiang+'</b><br>'+
+    'Isipadu Konkrit: <b>'+totalVol.toFixed(2)+' m³</b><br>Besi (80kg/m³): <b>'+besi.toFixed(0)+' kg</b><br>'+
+    '<hr>Kos Konkrit: '+RM(kKonkrit)+'<br>Kos Besi: '+RM(kBesi)+'<br>Kos Buruh: '+RM(kBuruh)+'<br>'+
+    '<hr><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(sub)+'</b>');
+}
+
+/* ===== ENG: STRUKTUR ===== */
+function calcStruktur(){
+  var tBil=parseInt(document.getElementById('strutTiangBil').value)||0;
+  var tTinggi=parseFloat(document.getElementById('strutTiangTinggi').value)||0;
+  var tSaiz=parseFloat(document.getElementById('strutTiangSaiz').value)||0;
+  var bP=parseFloat(document.getElementById('strutBeamP').value)||0;
+  var bSaiz=parseFloat(document.getElementById('strutBeamSaiz').value)||0;
+  var bBil=parseInt(document.getElementById('strutBeamBil').value)||0;
+  var lLuas=parseFloat(document.getElementById('strutLantaiLuas').value)||0;
+  var lTebal=parseFloat(document.getElementById('strutLantaiTebal').value)||0;
+  var hKonkrit=parseFloat(document.getElementById('strutHargaKonkrit').value)||280;
+  var hBesi=parseFloat(document.getElementById('strutHargaBesi').value)||3.8;
+  var hForm=parseFloat(document.getElementById('strutHargaForm').value)||40;
+  var hBuruh=parseFloat(document.getElementById('strutHargaBuruh').value)||150;
+  var volTiang=tBil*tTinggi*tSaiz;
+  var volBeam=bP*bSaiz*bBil;
+  var volLantai=lLuas*lTebal;
+  var totalVol=volTiang+volBeam+volLantai;
+  var besi=totalVol*100;
+  var formwork=(tBil*tTinggi*4*tSaiz)+((lLuas)*1);
+  var kKonkrit=totalVol*hKonkrit;
+  var kBesi=besi*hBesi;
+  var kForm=formwork*hForm;
+  var kBuruh=totalVol*hBuruh;
+  var sub=kKonkrit+kBesi+kForm+kBuruh;
+  showRes('strukturRes',
+    'Isipadu Tiang: <b>'+volTiang.toFixed(2)+' m³</b><br>'+
+    'Isipadu Beam: <b>'+volBeam.toFixed(2)+' m³</b><br>'+
+    'Isipadu Lantai: <b>'+volLantai.toFixed(2)+' m³</b><br>'+
+    '<b>Total Isipadu: '+totalVol.toFixed(2)+' m³</b><br>'+
+    'Besi (100kg/m³): <b>'+besi.toFixed(0)+' kg</b><br>'+
+    'Formwork: <b>'+formwork.toFixed(1)+' m²</b><br>'+
+    '<hr>Kos Konkrit: '+RM(kKonkrit)+'<br>Kos Besi: '+RM(kBesi)+'<br>Kos Formwork: '+RM(kForm)+'<br>Kos Buruh: '+RM(kBuruh)+'<br>'+
+    '<hr><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(sub)+'</b>');
+}
+
+/* ===== ENG: PINTU & TINGKAP ===== */
+function calcPintuTingkap(){
+  var pu=parseInt(document.getElementById('pintuUtama').value)||0;
+  var hu=parseFloat(document.getElementById('pintuHargaUtama').value)||0;
+  var pb=parseInt(document.getElementById('pintuBilik').value)||0;
+  var hb=parseFloat(document.getElementById('pintuHargaBilik').value)||0;
+  var pt=parseInt(document.getElementById('pintuTandas').value)||0;
+  var ht=parseFloat(document.getElementById('pintuHargaTandas').value)||0;
+  var tk=parseInt(document.getElementById('tingkapKecil').value)||0;
+  var hk=parseFloat(document.getElementById('tingkapHargaKecil').value)||0;
+  var tb=parseInt(document.getElementById('tingkapBesar').value)||0;
+  var hbk=parseFloat(document.getElementById('tingkapHargaBesar').value)||0;
+  var hBuruh=parseFloat(document.getElementById('pintuHargaBuruh').value)||100;
+  var wastage=parseFloat(document.getElementById('pintuWastage').value)||5;
+  var totalUnit=pu+pb+pt+tk+tb;
+  var kPintu=(pu*hu)+(pb*hb)+(pt*ht);
+  var kTingkap=(tk*hk)+(tb*hbk);
+  var kBuruh=totalUnit*hBuruh;
+  var sub=kPintu+kTingkap+kBuruh;
+  var waste=sub*(wastage/100);
+  var total=sub+waste;
+  showRes('pintuRes',
+    'Pintu Utama: '+pu+' × '+RM(hu)+' = '+RM(pu*hu)+'<br>'+
+    'Pintu Bilik: '+pb+' × '+RM(hb)+' = '+RM(pb*hb)+'<br>'+
+    'Pintu Tandas: '+pt+' × '+RM(ht)+' = '+RM(pt*ht)+'<br>'+
+    'Tingkap Kecil: '+tk+' × '+RM(hk)+' = '+RM(tk*hk)+'<br>'+
+    'Tingkap Besar: '+tb+' × '+RM(hbk)+' = '+RM(tb*hbk)+'<br>'+
+    '<hr>Subtotal Material: '+RM(kPintu+kTingkap)+'<br>'+
+    'Buruh Pasang: '+totalUnit+' × '+RM(hBuruh)+' = '+RM(kBuruh)+'<br>'+
+    'Wastage '+wastage+'%: '+RM(waste)+'<br>'+
+    '<hr><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(total)+'</b>');
+}
+
+/* ===== ENG: ELEKTRIK ===== */
+function calcElektrik(){
+  var lampu=parseInt(document.getElementById('elekLampu').value)||0;
+  var hLampu=parseFloat(document.getElementById('elekHargaLampu').value)||0;
+  var soket=parseInt(document.getElementById('elekSoket').value)||0;
+  var hSoket=parseFloat(document.getElementById('elekHargaSoket').value)||0;
+  var aircond=parseInt(document.getElementById('elekAircond').value)||0;
+  var hAircond=parseFloat(document.getElementById('elekHargaAircond').value)||0;
+  var pemanas=parseInt(document.getElementById('elekPemanas').value)||0;
+  var hPemanas=parseFloat(document.getElementById('elekHargaPemanas').value)||0;
+  var papan=parseFloat(document.getElementById('elekPapanAgihan').value)||0;
+  var hBuruh=parseFloat(document.getElementById('elekHargaBuruh').value)||0;
+  var totalPoint=lampu+soket+aircond+pemanas;
+  var kLampu=lampu*hLampu;
+  var kSoket=soket*hSoket;
+  var kAircond=aircond*hAircond;
+  var kPemanas=pemanas*hPemanas;
+  var kBuruh=totalPoint*hBuruh;
+  var sub=kLampu+kSoket+kAircond+kPemanas+papan+kBuruh;
+  showRes('elekRes',
+    'Point Lampu: '+lampu+' × '+RM(hLampu)+' = '+RM(kLampu)+'<br>'+
+    'Point Soket: '+soket+' × '+RM(hSoket)+' = '+RM(kSoket)+'<br>'+
+    'Point Aircond: '+aircond+' × '+RM(hAircond)+' = '+RM(kAircond)+'<br>'+
+    'Point Pemanas: '+pemanas+' × '+RM(hPemanas)+' = '+RM(kPemanas)+'<br>'+
+    'Papan Agihan: '+RM(papan)+'<br>'+
+    'Buruh: '+totalPoint+' point × '+RM(hBuruh)+' = '+RM(kBuruh)+'<br>'+
+    '<hr><b style="font-size:1.1em;color:#fbbf24">Total: '+RM(sub)+'</b>');
+}
+
+/* ===== ENG: TANDAS ===== */
+function calcTandas(){
+  var bil=parseInt(document.getElementById('tandasBil').value)||0;
+  var jenis=document.getElementById('tandasJenis').value;
+  var mangga=parseFloat(document.getElementById('tandasMangga').value)||0;
+  var sinki=parseFloat(document.getElementById('tandasSinki').value)||0;
+  var shower=parseFloat(document.getElementById('tandasShower').value)||0;
+  var tiles=parseFloat(document.getElementById('tandasTiles').value)||0;
+  var kabinet=parseFloat(document.getElementById('tandasKabinet').value)||0;
+  var cermin=parseFloat(document.getElementById('tandasCermin').value)||0;
+  var paip=parseFloat(document.getElementById('tandasPaip').value)||0;
+  var buruh=parseFloat(document.getElementById('tandasBuruh').value)||0;
+  var perBilik=mangga+sinki+shower+tiles+kabinet+cermin+paip+buruh;
+  if(jenis==='basic')perBilik-=kabinet+cermin;
+  if(jenis==='premium')perBilik*=1.5;
+  var total=bil*perBilik;
+  showRes('tandasRes',
+    'Bilangan Bilik Air: <b>'+bil+'</b><br>Jenis: <b>'+jenis.toUpperCase()+'</b><br>'+
+    '<hr>Per Bilik Air:<br>'+
+    '  Mangkuk Tandas: '+RM(mangga)+'<br>'+
+    '  Sinki: '+RM(sinki)+'<br>'+
+    '  Shower: '+RM(shower)+'<br>'+
+    '  Tiles: '+RM(tiles)+'<br>'+
+    (jenis!=='basic'?'  Kabinet: '+RM(kabinet)+'<br>  Cermin: '+RM(cermin)+'<br>':'')+
+    '  Paip: '+RM(paip)+'<br>'+
+    '  Buruh: '+RM(buruh)+'<br>'+
+    '<b>Subtotal/Bilik: '+RM(perBilik)+'</b><br>'+
+    '<hr><b style="font-size:1.1em;color:#fbbf24">Total ('+bil+' bilik): '+RM(total)+'</b>');
+}
+
+/* ===== ENG: PENGURUSAN ===== */
+function calcPengurusan(){
+  var pbt=parseFloat(document.getElementById('pengPBT').value)||0;
+  var arkitek=parseFloat(document.getElementById('pengArkitek').value)||0;
+  var juruukur=parseFloat(document.getElementById('pengJuruukur').value)||0;
+  var utiliti=parseFloat(document.getElementById('pengUtiliti').value)||0;
+  var insurans=parseFloat(document.getElementById('pengInsurans').value)||0;
+  var managePct=parseFloat(document.getElementById('pengManage').value)||5;
+  var kosTotal=parseFloat(document.getElementById('pengKosTotal').value)||0;
+  var contingencyPct=parseFloat(document.getElementById('pengContingency').value)||10;
+  var yuranYuran=pbt+arkitek+juruukur+utiliti+insurans;
+  var manage=kosTotal*(managePct/100);
+  var sub=yuranYuran+manage;
+  var contingency=kosTotal*(contingencyPct/100);
+  var grandTotal=kosTotal+sub+contingency;
+  showRes('pengRes',
+    'Yuran PBT: '+RM(pbt)+'<br>'+
+    'Yuran Arkitek: '+RM(arkitek)+'<br>'+
+    'Yuran Juruukur: '+RM(juruukur)+'<br>'+
+    'TNB/SYABAS: '+RM(utiliti)+'<br>'+
+    'Insurans & Permit: '+RM(insurans)+'<br>'+
+    '<b>Subtotal Yuran: '+RM(yuranYuran)+'</b><br>'+
+    '<hr>Pengurusan Projek ('+managePct+'%): '+RM(manage)+'<br>'+
+    '<b>Total Yuran + Pengurusan: '+RM(sub)+'</b><br>'+
+    '<hr>Kos Pembinaan: '+RM(kosTotal)+'<br>'+
+    'Contingency ('+contingencyPct+'%): '+RM(contingency)+'<br>'+
+    '<hr><b style="font-size:1.15em;color:#fbbf24">GRAND TOTAL: '+RM(grandTotal)+'</b>');
+}
+
+/* ===== FINANCE ===== */
+function calcMudah(){
+  var p=parseFloat(document.getElementById('mudahP').value);
+  var r=parseFloat(document.getElementById('mudahR').value);
+  var t=parseFloat(document.getElementById('mudahT').value);
+  var el=document.getElementById('mudahResult');
+  if(!p||!r||!t){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan semua nilai</span>';return;}
+  var interest=p*(r/100)*t;
+  var total=p+interest;
+  el.style.display='block';
+  el.innerHTML='<b>Faedah: '+RM(interest)+'</b><br>Jumlah: '+RM(total);
+}
+
+function calcCompound(){
+  var p=parseFloat(document.getElementById('compP').value);
+  var r=parseFloat(document.getElementById('compR').value);
+  var t=parseFloat(document.getElementById('compT').value);
+  var n=parseInt(document.getElementById('compN').value);
+  var el=document.getElementById('compResult');
+  if(!p||!r||!t||!n){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan semua nilai</span>';return;}
+  var total=p*Math.pow(1+(r/100)/n,n*t);
+  var interest=total-p;
+  el.style.display='block';
+  el.innerHTML='<b>Jumlah: '+RM(total)+'</b><br>Faedah: '+RM(interest);
+}
+
+function calcLoan(){
+  var amt=parseFloat(document.getElementById('loanAmt').value);
+  var rate=parseFloat(document.getElementById('loanRate').value);
+  var years=parseFloat(document.getElementById('loanYears').value);
+  var el=document.getElementById('loanResult');
+  if(!amt||!rate||!years){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan semua nilai</span>';return;}
+  var mr=rate/100/12;
+  var mp=amt*(mr*Math.pow(1+mr,years*12))/(Math.pow(1+mr,years*12)-1);
+  var total=mp*years*12;
+  var interest=total-amt;
+  el.style.display='block';
+  el.innerHTML='<b>Bayaran bulanan: '+RM(mp)+'</b><br>Jumlah bayaran: '+RM(total)+'<br>Jumlah faedah: '+RM(interest);
+}
+
+function updateZakatStatus(){
+  var status=document.getElementById('zakatStatus').value;
+  var pasanganRow=document.getElementById('zakatPasanganRow');
+  var anakKategoriRow=document.getElementById('zakatAnakKategoriRow');
+  if(status==='bujang'){
+    pasanganRow.style.display='none';
+    anakKategoriRow.style.display='none';
+  }else{
+    pasanganRow.style.display='';
+    anakKategoriRow.style.display='';
+  }
+}
+
+function calcZakat(){
+  var monthly=parseFloat(document.getElementById('zakatInc').value);
+  var el=document.getElementById('zakatResult');
+  if(!monthly||isNaN(monthly)){
+    el.style.display='block';
+    el.innerHTML='<span class="err">Sila masukkan gaji bulanan yang sah</span>';
+    return;
+  }
+  var annual=monthly*12;
+  var status=document.getElementById('zakatStatus').value;
+  var statusLabel=status==='bujang'?'Bujang':status==='berkahwin-l'?'Berkahwin (Lelaki)':'Berkahwin (Perempuan)';
+  var kifayahDiri=parseFloat(document.getElementById('zakatDiri').value)||0;
+  var adaPasangan=status!=='bujang';
+  var kifayahPasangan=adaPasangan?(parseFloat(document.getElementById('zakatKifayahPasangan').value)||0):0;
+  var anakPrasekolah=parseInt(document.getElementById('zakatAnakPrasekolah').value)||0;
+  var anakRendah=parseInt(document.getElementById('zakatAnakRendah').value)||0;
+  var anakMenengah=parseInt(document.getElementById('zakatAnakMenengah').value)||0;
+  var anakIPT=parseInt(document.getElementById('zakatAnakIPT').value)||0;
+  var kadarPrasekolah=3000;
+  var kadarRendah=3500;
+  var kadarMenengah=4000;
+  var kadarIPT=5000;
+  var kifayahPrasekolah=anakPrasekolah*kadarPrasekolah;
+  var kifayahRendah=anakRendah*kadarRendah;
+  var kifayahMenengah=anakMenengah*kadarMenengah;
+  var kifayahIPT=anakIPT*kadarIPT;
+  var kifayahAnak=kifayahPrasekolah+kifayahRendah+kifayahMenengah+kifayahIPT;
+  var totalBilAnak=anakPrasekolah+anakRendah+anakMenengah+anakIPT;
+  var totalKifayah=kifayahDiri+kifayahPasangan+kifayahAnak;
+  var autoKWSP=document.getElementById('zakatAutoKWSP').checked;
+  var kwspBulanan=autoKWSP?(monthly*0.11):(parseFloat(document.getElementById('zakatKWSP').value)||0);
+  var kwspTahunan=kwspBulanan*12;
+  var lainBulanan=parseFloat(document.getElementById('zakatLain').value)||0;
+  var lainTahunan=lainBulanan*12;
+  var totalPotongan=totalKifayah+kwspTahunan+lainTahunan;
+  var bersih=Math.max(0,annual-totalPotongan);
+  var zakat=bersih*0.025;
+  var output='<b>Status: '+statusLabel+'</b><br>'+
+    '<b>Gaji Kasar Tahunan: '+RM(annual)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Had Kifayah:</b><br>'+
+    '  Diri: '+RM(kifayahDiri)+'<br>';
+  if(adaPasangan){
+    output+='  Pasangan: '+RM(kifayahPasangan)+'<br>';
+  }
+  if(totalBilAnak>0){
+    output+='<b>  Anak ('+totalBilAnak+' orang):</b><br>';
+    if(anakPrasekolah>0) output+='    Pra-sekolah ('+anakPrasekolah+' × RM'+kadarPrasekolah+'): '+RM(kifayahPrasekolah)+'<br>';
+    if(anakRendah>0) output+='    Sekolah Rendah ('+anakRendah+' × RM'+kadarRendah+'): '+RM(kifayahRendah)+'<br>';
+    if(anakMenengah>0) output+='    Sekolah Menengah ('+anakMenengah+' × RM'+kadarMenengah+'): '+RM(kifayahMenengah)+'<br>';
+    if(anakIPT>0) output+='    IPT/Kolej ('+anakIPT+' × RM'+kadarIPT+'): '+RM(kifayahIPT)+'<br>';
+    output+='  Total Anak: '+RM(kifayahAnak)+'<br>';
+  }
+  output+='<b>Total Had Kifayah: '+RM(totalKifayah)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Potongan Lain:</b><br>'+
+    '  KWSP (11%): '+RM(kwspTahunan)+'/tahun<br>';
+  if(lainTahunan>0){
+    output+='  Potongan Lain: '+RM(lainTahunan)+'/tahun<br>';
+  }
+  output+='<b>Total Potongan: '+RM(totalPotongan)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Pendapatan Bersih (Nisab): '+RM(bersih)+'</b><br>'+
+    'Kadar Zakat: 2.5%<br>'+
+    '<strong style="font-size:1.15em;color:#fbbf24">Zakat Tahunan: '+RM(zakat)+'</strong><br>'+
+    '<strong style="font-size:1em;color:#fbbf24">Zakat Bulanan: '+RM(zakat/12)+'</strong>';
+  el.style.display='block';
+  el.innerHTML=output;
+}
+
+/* LHDN 2024 Tax Brackets */
+function lhdnTax(inc,pelepasan){
+  var relief=pelepasan||9000;
+  var c=Math.max(0,inc-relief);
+  var tax=0;
+  if(c<=5000){tax=c*0;}
+  else if(c<=20000){tax=(c-5000)*0.01;}
+  else if(c<=35000){tax=150+(c-20000)*0.03;}
+  else if(c<=50000){tax=600+(c-35000)*0.08;}
+  else if(c<=70000){tax=1800+(c-50000)*0.13;}
+  else if(c<=100000){tax=4400+(c-70000)*0.21;}
+  else if(c<=400000){tax=10700+(c-100000)*0.24;}
+  else{tax=82700+(c-400000)*0.26;}
+  return tax;
+}
+
+function autoKiraZakatCukai(){
+  var inc=parseFloat(document.getElementById('cukaiInc').value);
+  if(!inc){alert('Sila masukkan pendapatan tahunan dahulu');return;}
+  var diri=parseFloat(document.getElementById('cukaiDiri').value)||0;
+  var isteri=parseFloat(document.getElementById('cukaiIsteri').value)||0;
+  var anak=parseInt(document.getElementById('cukaiAnak').value)||0;
+  var anakType=document.getElementById('cukaiAnakType').value;
+  var anakRate=parseFloat(anakType)||2000;
+  var insurans=Math.min(parseFloat(document.getElementById('cukaiInsurans').value)||0, 7000);
+  var edu=Math.min(parseFloat(document.getElementById('cukaiEdu').value)||0, 3000);
+  var ibuBapa=Math.min(parseFloat(document.getElementById('cukaiIbuBapa').value)||0, 2000);
+  var lain=parseFloat(document.getElementById('cukaiLain').value)||0;
+  var pelepasanAnak=anak*anakRate;
+  var totalPelepasan=diri+isteri+pelepasanAnak+insurans+edu+ibuBapa+lain;
+  var chargeable=Math.max(0,inc-totalPelepasan);
+  var kifayah=15000;
+  var kwsp=inc*0.11;
+  var bersih=Math.max(0,chargeable-kifayah-kwsp);
+  var zakat=bersih*0.025;
+  document.getElementById('cukaiRebatZakat').value=zakat.toFixed(2);
+  alert('Zakat telah dikira automatik:\n\nPendapatan Bercukai: '+RM(chargeable)+'\nTolak Had Kifayah: '+RM(kifayah)+'\nTolak KWSP (11%): '+RM(kwsp)+'\nPendapatan Bersih: '+RM(bersih)+'\n\nZakat 2.5%: '+RM(zakat)+'\n\nKlik "Kira" untuk lihat hasil penuh.');
+}
+
+function calcCukai(){
+  var inc=parseFloat(document.getElementById('cukaiInc').value);
+  var el=document.getElementById('cukaiResult');
+  if(!inc){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan pendapatan tahunan</span>';return;}
+  var diri=parseFloat(document.getElementById('cukaiDiri').value)||0;
+  var isteri=parseFloat(document.getElementById('cukaiIsteri').value)||0;
+  var anak=parseInt(document.getElementById('cukaiAnak').value)||0;
+  var anakType=document.getElementById('cukaiAnakType').value;
+  var anakRate=parseFloat(anakType)||2000;
+  var insurans=Math.min(parseFloat(document.getElementById('cukaiInsurans').value)||0, 7000);
+  var edu=Math.min(parseFloat(document.getElementById('cukaiEdu').value)||0, 3000);
+  var ibuBapa=Math.min(parseFloat(document.getElementById('cukaiIbuBapa').value)||0, 2000);
+  var lain=parseFloat(document.getElementById('cukaiLain').value)||0;
+  var rebat=parseFloat(document.getElementById('cukaiRebatZakat').value)||0;
+  var pelepasanAnak=anak*anakRate;
+  var totalPelepasan=diri+isteri+pelepasanAnak+insurans+edu+ibuBapa+lain;
+  var chargeable=Math.max(0,inc-totalPelepasan);
+  var tax=lhdnTax(inc,totalPelepasan);
+  var pay=Math.max(0,tax-rebat);
+  el.style.display='block';
+  el.innerHTML='<b>Pendapatan Kasar: '+RM(inc)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Pelepasan Cukai:</b><br>'+
+    '  Diri: '+RM(diri)+'<br>'+
+    (isteri>0?'  Isteri: '+RM(isteri)+'<br>':'')+
+    (anak>0?'  Anak '+anak+' ('+(anakRate==2000?'bawah 18':'18+ pengajian tinggi')+') × '+RM(anakRate)+': '+RM(pelepasanAnak)+'<br>':'')+
+    (insurans>0?'  Insurans+KWSP: '+RM(insurans)+'<br>':'')+
+    (edu>0?'  Insurans Pendidikan: '+RM(edu)+'<br>':'')+
+    (ibuBapa>0?'  Ibu Bapa: '+RM(ibuBapa)+'<br>':'')+
+    (lain>0?'  Lain-lain: '+RM(lain)+'<br>':'')+
+    '<b>Total Pelepasan: '+RM(totalPelepasan)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Pendapatan Bercukai (LHDN): '+RM(chargeable)+'</b><br>'+
+    'Cukai Sebelum Rebat: '+RM(tax)+'<br>'+
+    (rebat>0?'<b>Rebat Zakat: '+RM(rebat)+'</b><br>':'')+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<strong style="font-size:1.15em;color:#fbbf24">Cukai Payable: '+RM(pay)+'</strong>';
+}
+
+/* ===== PEKERJA ===== */
+function calcGuru(){
+  var gaji=parseFloat(document.getElementById('guruGaji').value);
+  var elaun=parseFloat(document.getElementById('guruElaun').value)||0;
+  var tuisyen=parseFloat(document.getElementById('guruTuisyen').value)||0;
+  var buku=document.getElementById('guruBuku').checked?1000:0;
+  var kurs=document.getElementById('guruKurs').checked?500:0;
+  var el=document.getElementById('guruResult');
+  if(!gaji){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan gaji asas</span>';return;}
+  var total=gaji+elaun+tuisyen;
+  var pelepasan=9000+buku+kurs;
+  var annual=total*12;
+  var tax=lhdnTax(annual,pelepasan);
+  var kwsp=(gaji+elaun)*0.11;
+  el.style.display='block';
+  el.innerHTML='<b>Pendapatan: '+RM(total)+'</b><br>Pendapatan tahunan: '+RM(annual)+'<br>Pelepasan cukai: '+RM(pelepasan)+' (LHDN 2024)<br>Cukai tahunan: '+RM(tax)+'<br>KWSP (11%): '+RM(kwsp)+'/bulan';
+}
+
+function calcPA(){
+  var gaji=parseFloat(document.getElementById('paGaji').value);
+  var elaun=parseFloat(document.getElementById('paElaun').value)||0;
+  var tahun=parseFloat(document.getElementById('paTahun').value)||0;
+  var pencenOn=document.getElementById('paPencen').checked;
+  var el=document.getElementById('paResult');
+  if(!gaji){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan gaji asas</span>';return;}
+  var total=gaji+elaun;
+  var pencen=pencenOn?Math.min(gaji*tahun/600,gaji*30/600):0;
+  var kwsp=total*0.11;
+  el.style.display='block';
+  el.innerHTML='<b>Pendapatan bulanan: '+RM(total)+'</b><br>Pencen bulanan: '+RM(pencen)+' (Formula JPA)<br>KWSP (11%): '+RM(kwsp)+'/bulan';
+}
+
+function calcSwasta(){
+  var gaji=parseFloat(document.getElementById('swastaGaji').value);
+  var otJam=parseFloat(document.getElementById('swastaOTJam').value)||0;
+  var bonus=parseFloat(document.getElementById('swastaBonus').value)||0;
+  var weekend=document.getElementById('swastaOTWeekend').checked;
+  var el=document.getElementById('swastaResult');
+  if(!gaji){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan gaji asas</span>';return;}
+  var otRate=weekend?2.0:1.5;
+  var hourly=gaji/26/8;
+  var otPay=hourly*otRate*otJam;
+  var total=gaji+otPay+bonus;
+  var kwsp=total*0.11;
+  var gajiSocso=Math.min(total,5000);
+  var socso=gajiSocso*0.005;
+  var eis=gajiSocso*0.002;
+  var totalPotongan=kwsp+socso+eis;
+  el.style.display='block';
+  el.innerHTML='<b>Pendapatan kasar: '+RM(total)+'</b><br>Gaji: '+RM(gaji)+'<br>OT: '+RM(otPay)+'<br>Bonus: '+RM(bonus)+'<br><hr style="border-color:#334155;margin:6px 0">KWSP (11%): '+RM(kwsp)+'<br>Socso (0.5%): '+RM(socso)+'<br>EIS (0.2%): '+RM(eis)+'<br>Total potongan: '+RM(totalPotongan)+'<br><b>Net (anggaran): '+RM(total-totalPotongan)+'</b>';
+}
+
+function autoKiraZakatPekerja(){
+  var inc=parseFloat(document.getElementById('workTaxIncome').value);
+  if(!inc){alert('Sila masukkan pendapatan tahunan dahulu');return;}
+  var diri=parseFloat(document.getElementById('workTaxDiri').value)||0;
+  var isteri=parseFloat(document.getElementById('workTaxIsteri').value)||0;
+  var anak=parseInt(document.getElementById('workTaxAnak').value)||0;
+  var anakType=document.getElementById('workTaxAnakType').value;
+  var anakRate=parseFloat(anakType)||2000;
+  var insurans=Math.min(parseFloat(document.getElementById('workTaxInsurans').value)||0, 7000);
+  var edu=Math.min(parseFloat(document.getElementById('workTaxEdu').value)||0, 3000);
+  var ibuBapa=Math.min(parseFloat(document.getElementById('workTaxIbuBapa').value)||0, 2000);
+  var lain=parseFloat(document.getElementById('workTaxLain').value)||0;
+  var pelepasanAnak=anak*anakRate;
+  var totalPelepasan=diri+isteri+pelepasanAnak+insurans+edu+ibuBapa+lain;
+  var chargeable=Math.max(0,inc-totalPelepasan);
+  var kifayah=15000;
+  var kwsp=inc*0.11;
+  var bersih=Math.max(0,chargeable-kifayah-kwsp);
+  var zakat=bersih*0.025;
+  document.getElementById('workTaxRebatZakat').value=zakat.toFixed(2);
+  alert('Zakat telah dikira automatik:\n\nPendapatan Bercukai: '+RM(chargeable)+'\nTolak Had Kifayah: '+RM(kifayah)+'\nTolak KWSP (11%): '+RM(kwsp)+'\nPendapatan Bersih: '+RM(bersih)+'\n\nZakat 2.5%: '+RM(zakat)+'\n\nKlik "Kira" untuk lihat hasil penuh.');
+}
+
+function calcTax2024(){
+  var inc=parseFloat(document.getElementById('workTaxIncome').value);
+  var el=document.getElementById('workTaxResult');
+  if(!inc){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan pendapatan tahunan</span>';return;}
+  var diri=parseFloat(document.getElementById('workTaxDiri').value)||0;
+  var isteri=parseFloat(document.getElementById('workTaxIsteri').value)||0;
+  var anak=parseInt(document.getElementById('workTaxAnak').value)||0;
+  var anakType=document.getElementById('workTaxAnakType').value;
+  var anakRate=parseFloat(anakType)||2000;
+  var insurans=Math.min(parseFloat(document.getElementById('workTaxInsurans').value)||0, 7000);
+  var edu=Math.min(parseFloat(document.getElementById('workTaxEdu').value)||0, 3000);
+  var ibuBapa=Math.min(parseFloat(document.getElementById('workTaxIbuBapa').value)||0, 2000);
+  var lain=parseFloat(document.getElementById('workTaxLain').value)||0;
+  var rebat=parseFloat(document.getElementById('workTaxRebatZakat').value)||0;
+  var pelepasanAnak=anak*anakRate;
+  var totalPelepasan=diri+isteri+pelepasanAnak+insurans+edu+ibuBapa+lain;
+  var chargeable=Math.max(0,inc-totalPelepasan);
+  var tax=lhdnTax(inc,totalPelepasan);
+  var pay=Math.max(0,tax-rebat);
+  el.style.display='block';
+  el.innerHTML='<b>Pendapatan Kasar: '+RM(inc)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Pelepasan Cukai:</b><br>'+
+    '  Diri: '+RM(diri)+'<br>'+
+    (isteri>0?'  Isteri: '+RM(isteri)+'<br>':'')+
+    (anak>0?'  Anak '+anak+' ('+(anakRate==2000?'bawah 18':'18+ pengajian tinggi')+') × '+RM(anakRate)+': '+RM(pelepasanAnak)+'<br>':'')+
+    (insurans>0?'  Insurans+KWSP: '+RM(insurans)+'<br>':'')+
+    (edu>0?'  Insurans Pendidikan: '+RM(edu)+'<br>':'')+
+    (ibuBapa>0?'  Ibu Bapa: '+RM(ibuBapa)+'<br>':'')+
+    (lain>0?'  Lain-lain: '+RM(lain)+'<br>':'')+
+    '<b>Total Pelepasan: '+RM(totalPelepasan)+'</b><br>'+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<b>Pendapatan Bercukai (LHDN): '+RM(chargeable)+'</b><br>'+
+    'Cukai Sebelum Rebat: '+RM(tax)+'<br>'+
+    (rebat>0?'<b>Rebat Zakat: '+RM(rebat)+'</b><br>':'')+
+    '<hr style="border-color:#334155;margin:6px 0">'+
+    '<strong style="font-size:1.15em;color:#fbbf24">Cukai Payable: '+RM(pay)+'</strong>';
+}
+
+function calcKWSP(){
+  var gaji=parseFloat(document.getElementById('kwspGaji').value);
+  var umur=parseInt(document.getElementById('kwspUmur').value);
+  var tahun=parseInt(document.getElementById('kwspTahun').value);
+  var el=document.getElementById('kwspResult');
+  if(!gaji||!umur||!tahun){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan semua nilai</span>';return;}
+  if(tahun<=0||tahun>50){el.style.display='block';el.innerHTML='<span class="err">Sila masukkan tahun yang sah (1-50)</span>';return;}
+  var rateEmp=gaji<5000?0.13:0.12;
+  var divRate=umur>=50?0.06:0.05;
+  var monthlyTotal=gaji*0.11+gaji*rateEmp;
+  var monthlyRate=divRate/12;
+  var months=tahun*12;
+  var power=Math.pow(1+monthlyRate,months);
+  var savings=monthlyTotal*((power-1)/monthlyRate);
+  if(!isFinite(savings)||isNaN(savings)){el.style.display='block';el.innerHTML='<span class="err">Pengiraan tidak sah - sila semak input</span>';return;}
+  el.style.display='block';
+  el.innerHTML='<b>Caruman bulanan: '+RM(monthlyTotal)+'</b><br>Pekerja (11%): '+RM(gaji*0.11)+' | Majikan ('+rateEmp*100+'%): '+RM(gaji*rateEmp)+'<br>Dividen: '+divRate*100+'%/tahun<br><b>Anggaran simpanan: '+RM(savings)+'</b>';
+}
+
+/* ===== INIT ===== */
+try{updateUnits();}catch(e){}
+try{updateZakatStatus();}catch(e){}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.fx-grid button').forEach(function(btn){
+    btn.addEventListener('mousedown',function(){this.classList.add('pressed');});
+    btn.addEventListener('mouseup',function(){this.classList.remove('pressed');});
+    btn.addEventListener('mouseleave',function(){this.classList.remove('pressed');});
+    btn.addEventListener('touchstart',function(){this.classList.add('pressed');});
+    btn.addEventListener('touchend',function(){this.classList.remove('pressed');});
+  });
+});
+/* Auto-highlight sub-tab pertama bila tab dibuka */
+document.addEventListener('DOMContentLoaded',function(){
+  ['tab-engineering','tab-finance','tab-pekerja'].forEach(function(tid){
+    var tab=document.getElementById(tid);
+    if(!tab)return;
+    var first=tab.querySelector('.sub-tab-btn');
+    if(first){
+      var oc=first.getAttribute('onclick')||'';
+      var m=oc.match(/'([^']+)'/);
+      if(m)showSub(m[1],tid);
+    }
+  });
+});
+/* ===== ENG: WASTE PIPE ===== */
+function calcWastePipe(){
+  var bilik=parseInt(document.getElementById('wasteBilik').value)||0;
+  var dapur=parseInt(document.getElementById('wasteDapur').value)||0;
+  var tandas=parseInt(document.getElementById('wasteTandas').value)||0;
+  var septic=parseFloat(document.getElementById('wasteSeptic').value)||0;
+  var tingkat=parseInt(document.getElementById('wasteTingkat').value)||1;
+
+  if(bilik+dapur+tandas<=0){
+    showErr('wasteRes','Sila masukkan sekurang-kurangnya 1 bilik');
+    return;
+  }
+
+  // Anggaran panjang (m) — rule of thumb tukang Malaysia
+  // Waste pipe 50mm: dari setiap sinki/shower/floor trap ke soil pipe
+  var waste50=(bilik*6)+(dapur*4);
+  // Soil pipe 110mm: dari setiap mangkuk tandas ke septic tank
+  var soil110=(bilik*3)+(tandas*4)+septic+(tingkat*3);
+  // Vent pipe 50mm: dari atas soil pipe ke luar bumbung
+  var vent50=(bilik*2)+(tandas*2)+(tingkat*3);
+
+  // Fitting
+  var floorTrap=bilik+tandas;
+  var elbow=(bilik*4)+(dapur*2)+(tandas*2);
+  var tee=(bilik*2)+(dapur*1);
+  var pTrap=(bilik*2)+(dapur*1);
+  var socket=Math.ceil((waste50+soil110+vent50)/3);
+  var ventCap=bilik+tandas;
+
+  // Harga
+  var h50=parseFloat(document.getElementById('wasteHarga50').value)||12;
+  var h75=parseFloat(document.getElementById('wasteHarga75').value)||18;
+  var h110=parseFloat(document.getElementById('wasteHarga110').value)||22;
+  var hElbow=parseFloat(document.getElementById('wasteHargaElbow').value)||6;
+  var hTee=parseFloat(document.getElementById('wasteHargaTee').value)||8;
+  var hFloor=parseFloat(document.getElementById('wasteHargaFloor').value)||25;
+  var hP=parseFloat(document.getElementById('wasteHargaP').value)||15;
+  var hSocket=parseFloat(document.getElementById('wasteHargaSocket').value)||4;
+  var hVent=parseFloat(document.getElementById('wasteHargaVent').value)||8;
+  var hBuruh=parseFloat(document.getElementById('wasteHargaBuruh').value)||80;
+
+  // Kos
+  var kPaip50=waste50*h50;
+  var kPaip110=soil110*h110;
+  var kVent50=vent50*h50;
+  var kElbow=elbow*hElbow;
+  var kTee=tee*hTee;
+  var kFloor=floorTrap*hFloor;
+  var kP=pTrap*hP;
+  var kSocket=socket*hSocket;
+  var kVent=ventCap*hVent;
+  var pointAir=bilik*3+dapur*2+tandas*1;
+  var kBuruh=pointAir*hBuruh;
+
+  var sub=kPaip50+kPaip110+kVent50+kElbow+kTee+kFloor+kP+kSocket+kVent+kBuruh;
+  var waste=sub*0.1;
+  var total=sub+waste;
+
+  showRes('wasteRes',
+    '<b>📏 Kuantiti Paip:</b><br>'+
+    'Waste Pipe PVC 50mm: <b>'+waste50.toFixed(1)+' m</b> (sinki/shower)<br>'+
+    'Soil Pipe PVC 110mm: <b>'+soil110.toFixed(1)+' m</b> (tandas → septic)<br>'+
+    'Vent Pipe PVC 50mm: <b>'+vent50.toFixed(1)+' m</b> (pengudaraan)<br>'+
+    '<b>Total Paip: '+(waste50+soil110+vent50).toFixed(1)+' m</b><br>'+
+    '<hr><b>🔧 Fitting:</b><br>'+
+    'Elbow 90°: <b>'+elbow+' unit</b><br>'+
+    'Tee/Y: <b>'+tee+' unit</b><br>'+
+    'Floor Trap: <b>'+floorTrap+' unit</b><br>'+
+    'P-Trap: <b>'+pTrap+' unit</b><br>'+
+    'Socket: <b>'+socket+' unit</b><br>'+
+    'Vent Cap: <b>'+ventCap+' unit</b><br>'+
+    '<hr><b>💰 Kos:</b><br>'+
+    'PVC 50mm: '+waste50.toFixed(1)+'m × '+RM(h50)+' = '+RM(kPaip50)+'<br>'+
+    'PVC 110mm: '+soil110.toFixed(1)+'m × '+RM(h110)+' = '+RM(kPaip110)+'<br>'+
+    'Vent 50mm: '+vent50.toFixed(1)+'m × '+RM(h50)+' = '+RM(kVent50)+'<br>'+
+    'Elbow: '+elbow+' × '+RM(hElbow)+' = '+RM(kElbow)+'<br>'+
+    'Tee: '+tee+' × '+RM(hTee)+' = '+RM(kTee)+'<br>'+
+    'Floor Trap: '+floorTrap+' × '+RM(hFloor)+' = '+RM(kFloor)+'<br>'+
+    'P-Trap: '+pTrap+' × '+RM(hP)+' = '+RM(kP)+'<br>'+
+    'Socket: '+socket+' × '+RM(hSocket)+' = '+RM(kSocket)+'<br>'+
+    'Vent Cap: '+ventCap+' × '+RM(hVent)+' = '+RM(kVent)+'<br>'+
+    'Buruh ('+pointAir+' point): '+RM(kBuruh)+'<br>'+
+    '<hr>Subtotal: '+RM(sub)+'<br>Wastage 10%: '+RM(waste)+'<br>'+
+    '<b style="font-size:1.15em;color:#fbbf24">Total: '+RM(total)+'</b><br>'+
+    '<hr><b>📊 Standard MS 1228:</b><br>'+
+    '• Slope minimum: 1:60 (1cm/60cm)<br>'+
+    '• Setiap tandas perlu vent pipe<br>'+
+    '• Floor trap di setiap bilik air & dapur<br>'+
+    '• Elbow 90° untuk soil pipe, elbow 45° untuk waste pipe<br>'+
+    '• P-Trap wajib di bawah sinki (halang bau)');
+}
+</script>
+</body>
+</html>
